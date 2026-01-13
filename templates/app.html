@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Diary - ha3k4r</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        dark: {
+                            900: '#0a0a0f',
+                            800: '#12121a',
+                            700: '#1a1a24',
+                            600: '#22222e',
+                            500: '#2a2a38',
+                        },
+                        accent: {
+                            green: '#00d47e',
+                            red: '#ff4d6a',
+                            blue: '#3d8bfd',
+                            yellow: '#fbbf24',
+                            purple: '#a78bfa',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* ============================================
+           THEME VARIABLES - DARK MODE (DEFAULT)
+           ============================================ */
+        :root {
+            --bg-body: #0a0a0f;
+            --bg-sidebar: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-card-hover: #1a1a24;
+            --bg-input: rgba(255, 255, 255, 0.04);
+            --bg-input-hover: rgba(255, 255, 255, 0.06);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.75);
+            --text-muted: rgba(255, 255, 255, 0.45);
+            --text-faint: rgba(255, 255, 255, 0.25);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.15);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --shadow-soft: rgba(0, 0, 0, 0.2);
+            --accent-green: #00d47e;
+            --accent-green-dim: #00b368;
+            --accent-green-bg: rgba(0, 212, 126, 0.12);
+            --accent-green-glow: rgba(0, 212, 126, 0.25);
+            --accent-red: #ff4d6a;
+            --accent-red-bg: rgba(255, 77, 106, 0.12);
+            --accent-blue: #3d8bfd;
+            --accent-blue-bg: rgba(61, 139, 253, 0.12);
+            --accent-yellow: #fbbf24;
+            --accent-yellow-bg: rgba(251, 191, 36, 0.12);
+            --accent-orange: #fb923c;
+            --accent-orange-bg: rgba(251, 146, 60, 0.15);
+            --accent-purple: #a78bfa;
+            --accent-purple-bg: rgba(167, 139, 250, 0.15);
+            --scrollbar-track: #12121a;
+            --scrollbar-thumb: #2a2a38;
+            --modal-backdrop: rgba(0, 0, 0, 0.7);
+        }
+        
+        /* ============================================
+           THEME VARIABLES - LIGHT MODE
+           ============================================ */
+        .light-mode {
+            --bg-body: #f8fafc;
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f1f5f9;
+            --bg-input: rgba(15, 23, 42, 0.04);
+            --bg-input-hover: rgba(15, 23, 42, 0.06);
+            --text-primary: #0f172a;
+            --text-secondary: rgba(15, 23, 42, 0.75);
+            --text-muted: rgba(15, 23, 42, 0.55);
+            --text-faint: rgba(15, 23, 42, 0.35);
+            --border-color: rgba(15, 23, 42, 0.1);
+            --border-hover: rgba(15, 23, 42, 0.2);
+            --shadow-color: rgba(15, 23, 42, 0.1);
+            --shadow-soft: rgba(15, 23, 42, 0.06);
+            --accent-green: #059669;
+            --accent-green-dim: #047857;
+            --accent-green-bg: rgba(5, 150, 105, 0.1);
+            --accent-green-glow: rgba(5, 150, 105, 0.2);
+            --accent-red: #dc2626;
+            --accent-red-bg: rgba(220, 38, 38, 0.1);
+            --accent-blue: #2563eb;
+            --accent-blue-bg: rgba(37, 99, 235, 0.1);
+            --accent-yellow: #d97706;
+            --accent-yellow-bg: rgba(217, 119, 6, 0.1);
+            --accent-orange: #ea580c;
+            --accent-orange-bg: rgba(234, 88, 12, 0.12);
+            --accent-purple: #7c3aed;
+            --accent-purple-bg: rgba(124, 58, 237, 0.1);
+            --scrollbar-track: #e2e8f0;
+            --scrollbar-thumb: #94a3b8;
+            --modal-backdrop: rgba(15, 23, 42, 0.5);
+        }
+        
+        /* ============================================
+           BASE STYLES
+           ============================================ */
+        * { transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: var(--bg-body) !important;
+            color: var(--text-primary);
+        }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* ============================================
+           SCROLLBAR
+           ============================================ */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { opacity: 0.8; }
+        
+        /* ============================================
+           SIDEBAR
+           ============================================ */
+        aside {
+            background: var(--bg-sidebar) !important;
+            border-color: var(--border-color) !important;
+        }
+        aside h1 { color: var(--text-primary) !important; }
+        aside p { color: var(--text-muted) !important; }
+        
+        .sidebar-link { 
+            color: var(--text-secondary) !important;
+            transition: all 0.2s ease;
+            border-radius: 10px;
+        }
+        .sidebar-link:hover { 
+            background: var(--accent-green-bg) !important;
+            color: var(--accent-green) !important;
+        }
+        .sidebar-link.active { 
+            background: var(--accent-green-bg) !important;
+            color: var(--accent-green) !important;
+            font-weight: 500;
+        }
+        
+        /* ============================================
+           MAIN CONTENT AREA
+           ============================================ */
+        #mainContent {
+            background: var(--bg-body) !important;
+        }
+        
+        /* ============================================
+           TYPOGRAPHY
+           ============================================ */
+        h1, h2, h3, .font-bold, .font-semibold { color: var(--text-primary) !important; }
+        p { color: var(--text-secondary) !important; }
+        span { color: inherit; }
+        .text-gray-500 { color: var(--text-muted) !important; }
+        .text-gray-600 { color: var(--text-secondary) !important; }
+        .text-gray-700 { color: var(--text-secondary) !important; }
+        .text-white { color: var(--text-primary) !important; }
+        
+        /* ============================================
+           CARDS & CONTAINERS
+           ============================================ */
+        .bg-white, .bg-gray-50, .bg-gray-100 {
+            background: var(--bg-card) !important;
+        }
+        .card, .rounded-xl, .rounded-lg {
+            background: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+        }
+        .stat-card { 
+            background: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+            transition: all 0.2s ease;
+        }
+        .stat-card:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 24px var(--shadow-color);
+            border-color: var(--accent-green-glow) !important;
+        }
+        
+        /* ============================================
+           BORDERS
+           ============================================ */
+        .border, .border-r, .border-b, .border-t, .border-l {
+            border-color: var(--border-color) !important;
+        }
+        .divide-y > * + * { border-color: var(--border-color) !important; }
+        
+        /* ============================================
+           FORM ELEMENTS
+           ============================================ */
+        input:not([type="checkbox"]):not([type="radio"]), 
+        textarea {
+            background: var(--bg-input) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 10px !important;
+            color: var(--text-primary) !important;
+            transition: all 0.2s ease;
+        }
+        input:not([type="checkbox"]):not([type="radio"]):focus, 
+        textarea:focus {
+            border-color: var(--accent-green) !important;
+            box-shadow: 0 0 0 3px var(--accent-green-bg) !important;
+            outline: none !important;
+        }
+        input::placeholder, textarea::placeholder { 
+            color: var(--text-muted) !important; 
+        }
+        
+        select {
+            background: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+            border-radius: 10px !important;
+            color: var(--text-primary) !important;
+            cursor: pointer;
+        }
+        select:focus {
+            border-color: var(--accent-green) !important;
+            box-shadow: 0 0 0 3px var(--accent-green-bg) !important;
+            outline: none !important;
+        }
+        select option {
+            background: var(--bg-card) !important;
+            color: var(--text-primary) !important;
+            padding: 10px !important;
+        }
+        
+        label {
+            color: var(--text-secondary) !important;
+        }
+        label.block {
+            color: var(--text-secondary) !important;
+        }
+        
+        input[type="checkbox"], input[type="radio"] {
+            accent-color: var(--accent-green);
+            cursor: pointer;
+        }
+        input[type="checkbox"] {
+            width: 18px !important;
+            height: 18px !important;
+        }
+        
+        /* ============================================
+           TABLES
+           ============================================ */
+        table th { 
+            background: var(--bg-input) !important;
+            color: var(--text-muted) !important;
+            font-weight: 500;
+        }
+        table td { 
+            border-color: var(--border-color) !important;
+            color: var(--text-secondary) !important;
+        }
+        table tr:hover td {
+            background: var(--bg-input) !important;
+        }
+        
+        /* ============================================
+           MODAL
+           ============================================ */
+        #modal {
+            background: var(--modal-backdrop) !important;
+        }
+        #modal > div {
+            background: var(--bg-card) !important;
+            border: 1px solid var(--border-color) !important;
+        }
+        #modalContent h2 { color: var(--text-primary) !important; }
+        #modalContent p { color: var(--text-secondary) !important; }
+        #modalContent .text-sm { color: var(--text-secondary) !important; }
+        #modalContent .text-xs { color: var(--text-muted) !important; }
+        
+        /* ============================================
+           STATUS/ACCENT COLORS - CONSISTENT BOTH MODES
+           ============================================ */
+        .text-green-600, .text-green-700, .text-green-800 { color: var(--accent-green) !important; }
+        .bg-green-100, .bg-green-50 { background: var(--accent-green-bg) !important; }
+        
+        .text-red-600, .text-red-700, .text-red-800 { color: var(--accent-red) !important; }
+        .bg-red-100, .bg-red-50 { background: var(--accent-red-bg) !important; }
+        
+        .text-blue-600, .text-blue-700 { color: var(--accent-blue) !important; }
+        .bg-blue-100, .bg-blue-50 { background: var(--accent-blue-bg) !important; }
+        
+        .text-yellow-700, .text-yellow-800 { color: var(--accent-yellow) !important; }
+        .bg-yellow-100, .bg-yellow-50 { background: var(--accent-yellow-bg) !important; }
+        
+        .text-orange-600, .text-orange-700, .text-orange-800 { color: var(--accent-orange) !important; }
+        .bg-orange-100, .bg-orange-50 { background: var(--accent-orange-bg) !important; }
+        
+        .text-purple-600, .text-purple-700, .text-purple-800 { color: var(--accent-purple) !important; }
+        .bg-purple-100, .bg-purple-50 { background: var(--accent-purple-bg) !important; }
+        
+        /* ============================================
+           BUTTONS
+           ============================================ */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-dim) 100%);
+            color: #ffffff;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px var(--accent-green-glow);
+        }
+        
+        .bg-blue-600 { 
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #1d4ed8 100%) !important;
+            color: #ffffff !important;
+        }
+        .bg-green-600 {
+            background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-dim) 100%) !important;
+            color: #ffffff !important;
+        }
+        .bg-red-600 {
+            background: linear-gradient(135deg, var(--accent-red) 0%, #b91c1c 100%) !important;
+            color: #ffffff !important;
+        }
+        .bg-gray-200 {
+            background: var(--bg-input) !important;
+            color: var(--text-secondary) !important;
+        }
+        .bg-gray-200:hover {
+            background: var(--bg-input-hover) !important;
+        }
+        
+        /* ============================================
+           BORDER ACCENT COLORS
+           ============================================ */
+        .border-l-4.border-yellow-400 { border-left-color: var(--accent-yellow) !important; }
+        .border-l-4.border-green-400 { border-left-color: var(--accent-green) !important; }
+        .border-l-4.border-red-400 { border-left-color: var(--accent-red) !important; }
+        
+        /* ============================================
+           GRADIENT BACKGROUNDS
+           ============================================ */
+        .bg-gradient-to-r.from-blue-600 {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #6366f1 100%) !important;
+        }
+        .bg-gradient-to-r.from-yellow-500 {
+            background: linear-gradient(135deg, var(--accent-yellow) 0%, #f59e0b 100%) !important;
+        }
+        .bg-gradient-to-r.from-red-600 {
+            background: linear-gradient(135deg, var(--accent-red) 0%, #b91c1c 100%) !important;
+        }
+        
+        /* ============================================
+           SHADOWS
+           ============================================ */
+        .shadow-sm { box-shadow: 0 2px 8px var(--shadow-soft) !important; }
+        .shadow-xl { box-shadow: 0 8px 32px var(--shadow-color) !important; }
+        
+        /* ============================================
+           HOVER STATES
+           ============================================ */
+        .hover\:bg-gray-100:hover { background: var(--bg-input) !important; }
+        .hover\:bg-gray-50:hover { background: var(--bg-input) !important; }
+        .hover\:bg-red-50:hover { background: var(--accent-red-bg) !important; }
+        .hover\:bg-green-200:hover { background: var(--accent-green-bg) !important; }
+        .hover\:bg-gray-200:hover { background: var(--bg-input-hover) !important; }
+        
+        /* ============================================
+           SPECIAL COMPONENTS
+           ============================================ */
+        #expiryBanner {
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Theme toggle button */
+        #themeToggleBtn {
+            background: var(--bg-input) !important;
+            color: var(--text-muted) !important;
+            border: 1px solid var(--border-color) !important;
+        }
+        #themeToggleBtn:hover {
+            background: var(--bg-input-hover) !important;
+            color: var(--accent-green) !important;
+            border-color: var(--accent-green) !important;
+        }
+        
+        /* Holiday cards - special styling */
+        .holiday-card {
+            border: none !important;
+        }
+        .holiday-card p,
+        .holiday-card span {
+            color: inherit !important;
+        }
+        
+        .holiday-card-trading {
+            background: var(--accent-orange-bg) !important;
+            border: 1px solid rgba(251, 146, 60, 0.25) !important;
+        }
+        .holiday-card-trading p,
+        .holiday-card-trading span {
+            color: var(--accent-orange) !important;
+        }
+        
+        .holiday-card-clearing {
+            background: var(--accent-purple-bg) !important;
+            border: 1px solid rgba(167, 139, 250, 0.25) !important;
+        }
+        .holiday-card-clearing p,
+        .holiday-card-clearing span {
+            color: var(--accent-purple) !important;
+        }
+        
+        /* Lightbox */
+        .lightbox-overlay {
+            background: var(--modal-backdrop) !important;
+        }
+        
+        /* Logout button */
+        .logout-btn {
+            color: var(--text-muted) !important;
+            background: transparent !important;
+        }
+        .logout-btn:hover {
+            background: var(--accent-red-bg) !important;
+            color: var(--accent-red) !important;
+        }
+        
+        /* Chart.js adjustments */
+        .light-mode canvas {
+            filter: none;
+        }
+        canvas {
+            filter: brightness(1.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen text-white">
+    <div id="expiryBanner" class="hidden fixed top-0 left-0 right-0 z-50 text-center py-2 font-semibold text-white animate-pulse"></div>
+    <div class="flex h-screen" id="appContainer">
+        <aside class="w-64 border-r flex flex-col">
+            <div class="p-5 border-b">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-green-dim) 100%); box-shadow: 0 4px 16px var(--accent-green-glow);">
+                        <i class="fas fa-crosshairs text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg">Trade Diary</h1>
+                        <p class="text-xs">ha3k4r</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex-1 p-3 space-y-1">
+                <p class="text-xs font-medium px-3 py-2" style="color: var(--text-faint); letter-spacing: 0.5px;">MAIN</p>
+                <a href="#dashboard" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg transition" data-page="dashboard"><i class="fas fa-chart-line w-5"></i> Dashboard</a>
+                <a href="#trades" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg transition" data-page="trades"><i class="fas fa-exchange-alt w-5"></i> Trades</a>
+                <a href="#investments" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg transition" data-page="investments"><i class="fas fa-wallet w-5"></i> Investments</a>
+                <p class="text-xs font-medium px-3 py-2 mt-4" style="color: var(--text-faint); letter-spacing: 0.5px;">TOOLS</p>
+                <a href="#expenses" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg transition" data-page="expenses"><i class="fas fa-receipt w-5"></i> Expenses</a>
+                <a href="#holidays" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg transition" data-page="holidays"><i class="fas fa-calendar w-5"></i> Holidays</a>
+                <a href="#calculation" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg transition" data-page="calculation"><i class="fas fa-calculator w-5"></i> 1Cr Calculator</a>
+                <p class="text-xs font-medium px-3 py-2 mt-4" style="color: var(--text-faint); letter-spacing: 0.5px;">INSIGHTS</p>
+                <a href="#journal" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg transition" data-page="journal"><i class="fas fa-book w-5"></i> Journal</a>
+                <a href="#analytics" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg transition" data-page="analytics"><i class="fas fa-chart-pie w-5"></i> Analytics</a>
+                <a href="#settings" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg transition" data-page="settings"><i class="fas fa-cog w-5"></i> Settings</a>
+            </nav>
+            <div class="p-3 border-t">
+                <button id="themeToggleBtn" onclick="toggleTheme()" class="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg transition mb-2">
+                    <i id="themeIcon" class="fas fa-moon w-5"></i> 
+                    <span id="themeText">Dark Mode</span>
+                </button>
+                <button id="logoutBtn" onclick="logout()" class="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg transition logout-btn">
+                    <i class="fas fa-sign-out-alt w-5"></i> Sign Out
+                </button>
+            </div>
+        </aside>
+        <main class="flex-1 overflow-auto p-6" id="mainContent"></main>
+    </div>
+    <div id="modal" class="fixed inset-0 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="rounded-2xl shadow-xl max-w-lg w-full mx-4 max-h-[90vh] overflow-auto" id="modalContent"></div>
+    </div>
+    
+    <!-- Image Lightbox -->
+    <div id="lightbox" class="fixed inset-0 bg-black/90 backdrop-blur-md hidden items-center justify-center z-[60] cursor-zoom-out" onclick="closeLightbox()">
+        <button onclick="closeLightbox()" class="absolute top-4 right-4 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition" style="color: white;">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+        <img id="lightboxImg" src="" class="max-w-[95vw] max-h-[90vh] object-contain rounded-lg shadow-2xl" onclick="event.stopPropagation()">
+    </div>
+
+    <script>
+        async function api(url, options = {}) {
+            const res = await fetch(url, { ...options, headers: { 'Content-Type': 'application/json', ...options.headers } });
+            if (res.status === 401) { window.location.href = '/'; return; }
+            return res.json();
+        }
+
+        function formatCurrency(amount) { return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount); }
+        function formatPercent(value) { return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`; }
+        function formatDate(dateStr) { return new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); }
+        function formatDateTime(dateStr) { return new Date(dateStr).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+        function daysUntil(dateStr) { return Math.ceil((new Date(dateStr) - new Date()) / (1000 * 60 * 60 * 24)); }
+        
+        // Lightbox functions
+        function openLightbox(imgSrc) {
+            document.getElementById('lightboxImg').src = imgSrc;
+            document.getElementById('lightbox').classList.remove('hidden');
+            document.getElementById('lightbox').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.add('hidden');
+            document.getElementById('lightbox').classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+        
+        // Close lightbox on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        });
+        function getMonthYear(dateStr) { return new Date(dateStr).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }); }
+
+        let LOT_SIZES = {
+            'NIFTY_OPTION': { name: 'Nifty Option', lotSize: 65 },
+            'BANKNIFTY_OPTION': { name: 'Bank Nifty Option', lotSize: 30 },
+            'FINNIFTY_OPTION': { name: 'Fin Nifty Option', lotSize: 60 },
+            'STOCK_SWING': { name: 'Stock Swing', lotSize: 1 }
+        };
+
+        async function loadLotSizes() {
+            try {
+                const settings = await api('/api/settings');
+                LOT_SIZES['NIFTY_OPTION'].lotSize = settings.nifty_lot_size || 65;
+                LOT_SIZES['BANKNIFTY_OPTION'].lotSize = settings.banknifty_lot_size || 30;
+                LOT_SIZES['FINNIFTY_OPTION'].lotSize = settings.finnifty_lot_size || 60;
+            } catch(e) {}
+        }
+
+        const pages = { dashboard: renderDashboard, trades: renderTrades, investments: renderInvestments, expenses: renderExpenses, holidays: renderHolidays, calculation: renderCalculation, journal: renderJournal, analytics: renderAnalytics, settings: renderSettings };
+
+        function navigate(page) {
+            document.querySelectorAll('.sidebar-link').forEach(el => el.classList.remove('active'));
+            document.querySelector(`[data-page="${page}"]`)?.classList.add('active');
+            pages[page]?.();
+        }
+
+        document.querySelectorAll('.sidebar-link').forEach(el => {
+            el.addEventListener('click', (e) => { e.preventDefault(); navigate(el.dataset.page); history.pushState(null, '', `#${el.dataset.page}`); });
+        });
+
+        function showModal(content) { document.getElementById('modalContent').innerHTML = content; document.getElementById('modal').classList.remove('hidden'); document.getElementById('modal').classList.add('flex'); }
+        function hideModal() { document.getElementById('modal').classList.add('hidden'); document.getElementById('modal').classList.remove('flex'); }
+        document.getElementById('modal').addEventListener('click', (e) => { if (e.target.id === 'modal') hideModal(); });
+
+        async function logout() { await api('/api/auth/logout', { method: 'POST' }); window.location.href = '/'; }
+
+        // Theme toggle functionality - CSS handles all theming via variables
+        function toggleTheme() {
+            const body = document.body;
+            const isLight = body.classList.toggle('light-mode');
+            localStorage.setItem('appTheme', isLight ? 'light' : 'dark');
+            updateThemeButton(isLight);
+        }
+        
+        function updateThemeButton(isLight) {
+            const icon = document.getElementById('themeIcon');
+            const text = document.getElementById('themeText');
+            if (isLight) {
+                icon.className = 'fas fa-sun w-5';
+                text.textContent = 'Light Mode';
+            } else {
+                icon.className = 'fas fa-moon w-5';
+                text.textContent = 'Dark Mode';
+            }
+        }
+        
+        function initTheme() {
+            const savedTheme = localStorage.getItem('appTheme');
+            const isLight = savedTheme === 'light';
+            if (isLight) {
+                document.body.classList.add('light-mode');
+            }
+            updateThemeButton(isLight);
+        }
+
+        // ==================== DASHBOARD ====================
+        async function renderDashboard() {
+            const data = await api('/api/dashboard');
+            const chartData = await api('/api/dashboard/weekly-chart');
+            const holidays = await api('/api/holidays');
+            const trades = await api('/api/trades');
+            const now = new Date();
+            const nextTradingHoliday = holidays.filter(h => h.type === 'TRADING' && new Date(h.date) >= now).sort((a,b) => new Date(a.date) - new Date(b.date))[0];
+            const nextClearingHoliday = holidays.filter(h => h.type === 'CLEARING' && new Date(h.date) >= now).sort((a,b) => new Date(a.date) - new Date(b.date))[0];
+            
+            const closedTrades = trades.filter(t => t.status === 'CLOSED').sort((a,b) => new Date(a.updated_at) - new Date(b.updated_at));
+            let actualProgress = [{ trade: 0, capital: data.settings?.initial_capital || 40000 }];
+            let runningCapital = data.settings?.initial_capital || 40000;
+            closedTrades.forEach((t, i) => { runningCapital += (t.return_amount || 0); actualProgress.push({ trade: i + 1, capital: runningCapital }); });
+
+            let plannedProgress = [{ trade: 0, capital: data.settings?.initial_capital || 40000 }];
+            let plannedCapital = data.settings?.initial_capital || 40000;
+            for (let i = 1; i <= Math.max(closedTrades.length + 10, 50); i++) { plannedCapital *= (1 + (data.settings?.return_per_trade || 4) / 100); plannedProgress.push({ trade: i, capital: plannedCapital }); }
+            
+            let currentStreak = 0;
+            for (let i = closedTrades.length - 1; i >= 0; i--) { if (closedTrades[i].outcome === 'WIN') currentStreak++; else break; }
+            
+            const bestTrade = closedTrades.reduce((best, t) => (!best || (t.return_amount || 0) > (best.return_amount || 0)) ? t : best, null);
+            const worstTrade = closedTrades.reduce((worst, t) => (!worst || (t.return_amount || 0) < (worst.return_amount || 0)) ? t : worst, null);
+            
+            document.getElementById('mainContent').innerHTML = `
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div><h1 class="text-3xl font-bold">Dashboard</h1><p class="text-gray-500">${new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</p></div>
+                        <button onclick="navigate('trades'); setTimeout(showNewTradeModal, 100)" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"><i class="fas fa-plus mr-2"></i>New Trade</button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${nextTradingHoliday ? `<div class="holiday-card rounded-xl p-4 flex items-center gap-4" style="background: var(--accent-orange-bg); border: 1px solid rgba(251, 146, 60, 0.3);"><div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: rgba(251, 146, 60, 0.2);"><i class="fas fa-calendar-times text-xl" style="color: var(--accent-orange);"></i></div><div><p class="font-medium" style="color: var(--accent-orange);">Next Trading Holiday</p><p class="text-sm" style="color: var(--accent-orange); opacity: 0.85;">${nextTradingHoliday.description} - ${formatDate(nextTradingHoliday.date)} (${daysUntil(nextTradingHoliday.date)} days)</p></div></div>` : ''}
+                        ${nextClearingHoliday ? `<div class="holiday-card rounded-xl p-4 flex items-center gap-4" style="background: var(--accent-purple-bg); border: 1px solid rgba(167, 139, 250, 0.3);"><div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: rgba(167, 139, 250, 0.2);"><i class="fas fa-university text-xl" style="color: var(--accent-purple);"></i></div><div><p class="font-medium" style="color: var(--accent-purple);">Next Clearing Holiday</p><p class="text-sm" style="color: var(--accent-purple); opacity: 0.85;">${nextClearingHoliday.description} - ${formatDate(nextClearingHoliday.date)} (${daysUntil(nextClearingHoliday.date)} days)</p></div></div>` : ''}
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                        <div class="bg-white rounded-xl p-4 shadow-sm stat-card transition"><p class="text-gray-500 text-xs mb-1">Current Capital</p><p class="text-xl font-bold">${formatCurrency(data.current_capital)}</p></div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm stat-card transition"><p class="text-gray-500 text-xs mb-1">Total P/L</p><p class="text-xl font-bold ${data.total_pl >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.total_pl)}</p></div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm stat-card transition"><p class="text-gray-500 text-xs mb-1">Win Rate</p><p class="text-xl font-bold">${data.win_rate.toFixed(1)}%</p></div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm stat-card transition"><p class="text-gray-500 text-xs mb-1">Win Streak</p><p class="text-xl font-bold text-green-600">${currentStreak} 🔥</p></div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm stat-card transition"><p class="text-gray-500 text-xs mb-1">Best Trade</p><p class="text-xl font-bold text-green-600">${bestTrade ? formatCurrency(bestTrade.return_amount) : '-'}</p></div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm stat-card transition"><p class="text-gray-500 text-xs mb-1">Worst Trade</p><p class="text-xl font-bold text-red-600">${worstTrade ? formatCurrency(worstTrade.return_amount) : '-'}</p></div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-6 shadow-sm">
+                        <h3 class="font-semibold mb-4"><i class="fas fa-chart-line mr-2 text-blue-600"></i>Progress Curve (Actual vs Plan)</h3>
+                        <canvas id="progressChart" height="80"></canvas>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="bg-white rounded-xl p-6 shadow-sm"><h3 class="font-semibold mb-4">Weekly Performance</h3><canvas id="weeklyChart" height="150"></canvas></div>
+                        <div class="lg:col-span-2 bg-white rounded-xl p-6 shadow-sm">
+                            <h3 class="font-semibold mb-4 flex items-center gap-2"><i class="fas fa-crosshairs text-blue-600"></i> 1 Crore Goal</h3>
+                            <div class="space-y-4">
+                                <div><div class="flex justify-between text-sm mb-1"><span>Progress</span><span class="font-medium">${data.goal_progress.toFixed(2)}%</span></div><div class="h-3 bg-gray-200 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-blue-500 to-blue-600" style="width: ${Math.min(100, data.goal_progress)}%"></div></div></div>
+                                <div class="grid grid-cols-4 gap-3 text-center">
+                                    <div class="bg-gray-50 rounded-lg p-3"><p class="text-2xl font-bold text-blue-600">${data.trades_completed}</p><p class="text-xs text-gray-500">Completed</p></div>
+                                    <div class="bg-gray-50 rounded-lg p-3"><p class="text-2xl font-bold">${data.trades_remaining}</p><p class="text-xs text-gray-500">Remaining</p></div>
+                                    <div class="bg-gray-50 rounded-lg p-3"><p class="text-2xl font-bold text-green-600">${data.winning_trades}</p><p class="text-xs text-gray-500">Wins</p></div>
+                                    <div class="bg-gray-50 rounded-lg p-3"><p class="text-2xl font-bold text-red-600">${data.total_closed_trades - data.winning_trades}</p><p class="text-xs text-gray-500">Losses</p></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-xl p-6 shadow-sm"><div class="flex justify-between items-center mb-4"><h3 class="font-semibold">Open Trades</h3><span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">${data.open_trades_count}</span></div>${data.open_trades.length === 0 ? '<p class="text-gray-500 text-center py-8">No open trades</p>' : `<div class="space-y-3">${data.open_trades.map(t => `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100" onclick="showTradeDetail(${t.id})"><div><p class="font-medium">Trade #${t.trade_number} - ${t.symbol}</p><p class="text-sm text-gray-500">Avg: ${formatCurrency(t.avg_price)}</p></div><span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Open</span></div>`).join('')}</div>`}</div>
+                        <div class="bg-white rounded-xl p-6 shadow-sm"><div class="flex justify-between items-center mb-4"><h3 class="font-semibold">Recent Trades</h3><a href="#trades" onclick="navigate('trades')" class="text-blue-600 text-sm hover:underline">View All</a></div>${data.recent_trades.length === 0 ? '<p class="text-gray-500 text-center py-8">No trades yet</p>' : `<div class="space-y-3">${data.recent_trades.map(t => `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100" onclick="showTradeDetail(${t.id})"><div><p class="font-medium">Trade #${t.trade_number} - ${t.symbol}</p><p class="text-sm text-gray-500">${formatDateTime(t.updated_at)}</p></div><span class="font-medium ${t.return_amount >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(t.return_amount)}</span></div>`).join('')}</div>`}</div>
+                    </div>
+                </div>`;
+            
+            const progressCtx = document.getElementById('progressChart').getContext('2d');
+            new Chart(progressCtx, { type: 'line', data: { labels: plannedProgress.map(p => p.trade), datasets: [{ label: 'Planned', data: plannedProgress.map(p => p.capital), borderColor: '#9ca3af', backgroundColor: 'transparent', borderDash: [5, 5], tension: 0.4, pointRadius: 0 }, { label: 'Actual', data: actualProgress.map(p => p.capital), borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#3b82f6' }] }, options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { ticks: { callback: (v) => { if (v >= 10000000) return '₹' + (v/10000000).toFixed(1) + 'Cr'; if (v >= 100000) return '₹' + (v/100000).toFixed(1) + 'L'; return '₹' + (v/1000).toFixed(0) + 'K'; } } } } } });
+            const ctx = document.getElementById('weeklyChart').getContext('2d');
+            new Chart(ctx, { type: 'bar', data: { labels: chartData.map(d => d.date), datasets: [{ data: chartData.map(d => d.amount), backgroundColor: chartData.map(d => d.amount >= 0 ? '#22c55e' : '#ef4444'), borderRadius: 4 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => '₹' + (v/1000).toFixed(0) + 'k' } } } } });
+        }
+
+        // ==================== TRADES ====================
+        async function renderTrades() {
+            const trades = await api('/api/trades');
+            const openTrades = trades.filter(t => t.status === 'OPEN');
+            const closedTrades = trades.filter(t => t.status === 'CLOSED');
+            document.getElementById('mainContent').innerHTML = `
+                <div class="space-y-6">
+                    <h1 class="text-3xl font-bold">Trades</h1>
+                    <div class="flex items-center gap-4">
+                        <button onclick="showNewTradeModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"><i class="fas fa-plus mr-2"></i>New Trade</button>
+                        <div class="flex gap-2">
+                            <button class="tab-btn px-4 py-2 bg-blue-600 text-white rounded-lg" data-tab="all">All (${trades.length})</button>
+                            <button class="tab-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg" data-tab="open">Open (${openTrades.length})</button>
+                            <button class="tab-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg" data-tab="closed">Closed (${closedTrades.length})</button>
+                        </div>
+                    </div>
+                    <div id="tradesContainer">${renderTradesList(trades)}</div>
+                </div>`;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('bg-blue-600', 'text-white'); b.classList.add('bg-gray-200', 'text-gray-700'); });
+                    btn.classList.remove('bg-gray-200', 'text-gray-700'); btn.classList.add('bg-blue-600', 'text-white');
+                    let filtered = trades;
+                    if (btn.dataset.tab === 'open') filtered = openTrades;
+                    else if (btn.dataset.tab === 'closed') filtered = closedTrades;
+                    document.getElementById('tradesContainer').innerHTML = renderTradesList(filtered);
+                });
+            });
+        }
+
+        function renderTradesList(trades) {
+            if (trades.length === 0) return '<div class="bg-white rounded-xl p-12 text-center text-gray-500">No trades found</div>';
+            const openTrades = trades.filter(t => t.status === 'OPEN').sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+            const closedTrades = trades.filter(t => t.status === 'CLOSED').sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at));
+            const monthGroups = {};
+            closedTrades.forEach(t => { const key = getMonthYear(t.updated_at); if (!monthGroups[key]) monthGroups[key] = []; monthGroups[key].push(t); });
+            let html = '';
+            if (openTrades.length > 0) {
+                html += `<div class="mb-6"><h3 class="text-lg font-semibold mb-3 text-yellow-700"><i class="fas fa-clock mr-2"></i>Open Trades (${openTrades.length})</h3><div class="space-y-3">`;
+                openTrades.forEach(t => { html += renderOpenTradeCard(t); });
+                html += `</div></div>`;
+            }
+            const currentMonthYear = getMonthYear(new Date().toISOString());
+            Object.keys(monthGroups).forEach(month => {
+                const monthTrades = monthGroups[month];
+                const totalReturn = monthTrades.reduce((s, t) => s + (t.return_amount || 0), 0);
+                const totalPercent = monthTrades.reduce((s, t) => s + (t.return_percent || 0), 0) / monthTrades.length;
+                const wins = monthTrades.filter(t => (t.return_amount || 0) > 0).length;
+                const safeMonth = month.replace(/\s/g, '-');
+                const isCurrentMonth = month === currentMonthYear;
+                const hiddenClass = isCurrentMonth ? '' : 'hidden';
+                const arrowClass = isCurrentMonth ? 'rotate-90' : '';
+                html += `<div class="mb-4"><div class="bg-white rounded-xl shadow-sm overflow-hidden"><div class="p-4 bg-gray-50 border-b cursor-pointer flex items-center justify-between hover:bg-gray-100" onclick="toggleMonthGroup('${safeMonth}')"><div class="flex items-center gap-4"><i class="fas fa-chevron-right transition-transform month-arrow-${safeMonth} ${arrowClass}"></i><span class="font-semibold">${month}</span><span class="text-sm text-gray-500">${monthTrades.length} trades</span></div><div class="flex items-center gap-6"><div class="text-right"><p class="text-xs text-gray-500">Win Rate</p><p class="font-medium">${((wins/monthTrades.length)*100).toFixed(0)}%</p></div><div class="text-right"><p class="text-xs text-gray-500">Avg Return</p><p class="font-medium ${totalPercent >= 0 ? 'text-green-600' : 'text-red-600'}">${formatPercent(totalPercent)}</p></div><div class="text-right min-w-[100px]"><p class="text-xs text-gray-500">Total P/L</p><p class="font-bold ${totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(totalReturn)}</p></div></div></div><div class="month-group-${safeMonth} ${hiddenClass}"><div class="divide-y">${monthTrades.map(t => renderClosedTradeRow(t)).join('')}</div></div></div></div>`;
+            });
+            return html;
+        }
+
+        function renderOpenTradeCard(t) {
+            const totalQty = t.entries.reduce((s, e) => s + e.quantity, 0);
+            const targets = [3, 5, 10, 20].map(p => ({ p, price: t.avg_price * (1 + p/100), pl: (t.avg_price * p/100) * totalQty }));
+            return `<div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-yellow-400"><div class="flex items-center justify-between mb-3"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center"><span class="font-bold text-yellow-700">#${t.trade_number}</span></div><div><p class="font-semibold">${t.symbol}</p><p class="text-sm text-gray-500">${LOT_SIZES[t.instrument_type]?.name || t.instrument_type} • ${totalQty} qty @ ${formatCurrency(t.avg_price)}</p></div></div><div class="flex items-center gap-2"><button onclick="event.stopPropagation(); showEditTradeModal(${t.id})" class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg"><i class="fas fa-edit"></i></button><button onclick="event.stopPropagation(); deleteTrade(${t.id})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg"><i class="fas fa-trash"></i></button><button onclick="showCloseTradeModal(${t.id})" class="px-3 py-1 bg-green-600 text-white rounded-lg text-sm">Close</button></div></div><div class="grid grid-cols-4 gap-2">${targets.map(tg => `<div class="bg-green-50 rounded-lg p-2 text-center"><p class="text-xs text-green-600 font-medium">+${tg.p}%</p><p class="font-bold text-sm">${formatCurrency(tg.price)}</p><p class="text-xs text-gray-500">${formatCurrency(tg.pl)}</p></div>`).join('')}</div></div>`;
+        }
+
+        function renderClosedTradeRow(t) {
+            const totalQty = t.entries.reduce((s, e) => s + e.quantity, 0);
+            return `<div class="p-4 hover:bg-gray-50 cursor-pointer flex items-center justify-between" onclick="showTradeDetail(${t.id})"><div class="flex items-center gap-4"><div class="w-10 h-10 rounded-lg flex items-center justify-center ${t.outcome === 'WIN' ? 'bg-green-100' : 'bg-red-100'}"><span class="font-bold ${t.outcome === 'WIN' ? 'text-green-700' : 'text-red-700'}">#${t.trade_number}</span></div><div><p class="font-medium">${t.symbol}</p><p class="text-sm text-gray-500">${totalQty} qty @ ${formatCurrency(t.avg_price)} → ${formatCurrency(t.exit_price)}</p></div></div><div class="flex items-center gap-6"><span class="text-sm text-gray-500">${formatDate(t.updated_at)}</span><div class="text-right min-w-[100px]"><p class="font-bold ${t.return_amount >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(t.return_amount)}</p><p class="text-sm ${t.return_percent >= 0 ? 'text-green-600' : 'text-red-600'}">${formatPercent(t.return_percent)}</p></div><button onclick="event.stopPropagation(); showEditClosedTradeModal(${t.id})" class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg"><i class="fas fa-edit"></i></button><button onclick="event.stopPropagation(); deleteTrade(${t.id})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg"><i class="fas fa-trash"></i></button></div></div>`;
+        }
+
+        async function showEditClosedTradeModal(tradeId) {
+            const trade = await api(`/api/trades/${tradeId}`);
+            showModal(`<div class="p-6"><h2 class="text-xl font-bold mb-4">Edit Trade #${trade.trade_number}</h2><form id="editClosedTradeForm" class="space-y-4"><div class="bg-gray-50 rounded-lg p-3"><p class="font-medium">${trade.symbol}</p><p class="text-sm text-gray-500">${LOT_SIZES[trade.instrument_type]?.name || trade.instrument_type} • Avg: ${formatCurrency(trade.avg_price)}</p></div><div><label class="block text-sm font-medium mb-1">Exit Price</label><input type="number" step="0.05" id="editExitPrice" value="${trade.exit_price || ''}" class="w-full px-3 py-2 border rounded-lg"></div><div><label class="block text-sm font-medium mb-1">Outcome</label><select id="editOutcome" class="w-full px-3 py-2 border rounded-lg"><option value="WIN" ${trade.outcome === 'WIN' ? 'selected' : ''}>Win</option><option value="LOSS" ${trade.outcome === 'LOSS' ? 'selected' : ''}>Loss</option></select></div><label class="flex items-center gap-2"><input type="checkbox" id="editAgainstTrend" ${trade.against_trend ? 'checked' : ''}> Against Trend?</label><div><label class="block text-sm font-medium mb-1">Learnings</label><textarea id="editLearnings" class="w-full px-3 py-2 border rounded-lg" rows="2">${trade.learnings || ''}</textarea></div><div><label class="block text-sm font-medium mb-1">Screenshot (Paste with Ctrl+V)</label><div id="editScreenshotArea" class="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition" tabindex="0">${trade.screenshot ? `<img src="${trade.screenshot}" class="max-h-full max-w-full object-contain rounded">` : `<span class="text-gray-400 text-sm"><i class="fas fa-paste mr-2"></i>Click here and paste screenshot</span>`}</div><input type="hidden" id="editScreenshotData" value="${trade.screenshot || ''}"></div><div class="flex gap-2"><button type="button" onclick="hideModal()" class="flex-1 px-4 py-2 bg-gray-200 rounded-lg">Cancel</button><button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">Save Changes</button></div></form></div>`);
+            
+            // Setup paste listener
+            const handlePaste = (e) => {
+                const items = e.clipboardData?.items;
+                if (!items) return;
+                for (const item of items) {
+                    if (item.type.startsWith('image/')) {
+                        e.preventDefault();
+                        const file = item.getAsFile();
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            const base64 = event.target.result;
+                            document.getElementById('editScreenshotData').value = base64;
+                            document.getElementById('editScreenshotArea').innerHTML = `<img src="${base64}" class="max-h-full max-w-full object-contain rounded">`;
+                        };
+                        reader.readAsDataURL(file);
+                        break;
+                    }
+                }
+            };
+            document.addEventListener('paste', handlePaste);
+            
+            document.getElementById('editClosedTradeForm').addEventListener('submit', async (ev) => { 
+                ev.preventDefault(); 
+                await api(`/api/trades/${tradeId}`, { method: 'PATCH', body: JSON.stringify({ 
+                    exit_price: parseFloat(document.getElementById('editExitPrice').value),
+                    outcome: document.getElementById('editOutcome').value,
+                    against_trend: document.getElementById('editAgainstTrend').checked, 
+                    learnings: document.getElementById('editLearnings').value || null,
+                    screenshot: document.getElementById('editScreenshotData').value || null
+                }) }); 
+                document.removeEventListener('paste', handlePaste);
+                hideModal(); 
+                renderTrades(); 
+            });
+        }
+
+        function toggleMonthGroup(month) { const group = document.querySelector(`.month-group-${month}`); const arrow = document.querySelector(`.month-arrow-${month}`); group.classList.toggle('hidden'); arrow.classList.toggle('rotate-90'); }
+
+        function showNewTradeModal() {
+            showModal(`<div class="p-6"><h2 class="text-xl font-bold mb-4">New Trade</h2><form id="newTradeForm" class="space-y-4"><div class="grid grid-cols-2 gap-4"><div><label class="block text-sm font-medium mb-1">Symbol</label><input type="text" id="tradeSymbol" required class="w-full px-3 py-2 border rounded-lg uppercase" placeholder="e.g., NIFTY"></div><div><label class="block text-sm font-medium mb-1">Instrument</label><select id="tradeInstrument" required class="w-full px-3 py-2 border rounded-lg" onchange="updateLotSize()"><option value="">Select...</option>${Object.entries(LOT_SIZES).map(([k,v]) => `<option value="${k}" data-lot="${v.lotSize}">${v.name} (${v.lotSize})</option>`).join('')}</select></div></div><div id="entriesContainer"><div class="flex items-center justify-between mb-2"><label class="text-sm font-medium">Entries</label><button type="button" onclick="addEntryRow()" class="text-blue-600 text-sm"><i class="fas fa-plus mr-1"></i>Add Entry</button></div><div id="entryRows" class="space-y-2"><div class="entry-row flex gap-2 items-center"><input type="number" step="0.05" placeholder="Price" class="entry-price flex-1 px-3 py-2 border rounded-lg" required><input type="number" min="1" value="1" placeholder="Lots" class="entry-lots w-20 px-3 py-2 border rounded-lg" required><span class="entry-qty text-sm text-gray-500 w-16">= 0 qty</span></div></div></div><div id="tradeCalc" class="hidden bg-blue-50 rounded-lg p-4"><div class="grid grid-cols-3 gap-4 text-center"><div><p class="text-sm text-gray-500">Total Qty</p><p class="font-bold" id="calcQty">0</p></div><div><p class="text-sm text-gray-500">Avg Price</p><p class="font-bold" id="calcAvg">₹0</p></div><div><p class="text-sm text-gray-500">Investment</p><p class="font-bold" id="calcInv">₹0</p></div></div><div class="mt-3 pt-3 border-t"><p class="text-sm font-medium mb-2">Targets</p><div class="grid grid-cols-4 gap-2 text-center text-sm" id="calcTargets"></div></div></div><div class="flex gap-2"><button type="button" onclick="hideModal()" class="flex-1 px-4 py-2 bg-gray-200 rounded-lg">Cancel</button><button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">Create Trade</button></div></form></div>`);
+            document.getElementById('newTradeForm').addEventListener('submit', createTrade);
+            document.querySelectorAll('.entry-price, .entry-lots').forEach(el => el.addEventListener('input', calculateTradePreview));
+        }
+
+        function updateLotSize() { calculateTradePreview(); }
+        function addEntryRow() {
+            const row = document.createElement('div'); row.className = 'entry-row flex gap-2 items-center';
+            row.innerHTML = `<input type="number" step="0.05" placeholder="Price" class="entry-price flex-1 px-3 py-2 border rounded-lg" required><input type="number" min="1" value="1" placeholder="Lots" class="entry-lots w-20 px-3 py-2 border rounded-lg" required><span class="entry-qty text-sm text-gray-500 w-16">= 0 qty</span><button type="button" onclick="this.parentElement.remove(); calculateTradePreview()" class="text-red-500"><i class="fas fa-trash"></i></button>`;
+            document.getElementById('entryRows').appendChild(row);
+            row.querySelectorAll('.entry-price, .entry-lots').forEach(el => el.addEventListener('input', calculateTradePreview));
+        }
+
+        function calculateTradePreview() {
+            const instrument = document.getElementById('tradeInstrument');
+            const lotSize = parseInt(instrument.selectedOptions[0]?.dataset.lot) || 1;
+            const rows = document.querySelectorAll('.entry-row');
+            let totalValue = 0, totalQty = 0;
+            rows.forEach(row => { const price = parseFloat(row.querySelector('.entry-price').value) || 0; const lots = parseInt(row.querySelector('.entry-lots').value) || 0; const qty = lots * lotSize; row.querySelector('.entry-qty').textContent = `= ${qty} qty`; totalValue += price * qty; totalQty += qty; });
+            const avgPrice = totalQty > 0 ? totalValue / totalQty : 0;
+            if (avgPrice > 0) {
+                document.getElementById('tradeCalc').classList.remove('hidden');
+                document.getElementById('calcQty').textContent = totalQty;
+                document.getElementById('calcAvg').textContent = formatCurrency(avgPrice);
+                document.getElementById('calcInv').textContent = formatCurrency(totalValue);
+                const targets = [3, 5, 10, 20].map(p => ({ p, price: avgPrice * (1 + p/100), pl: (avgPrice * p/100) * totalQty }));
+                document.getElementById('calcTargets').innerHTML = targets.map(t => `<div class="bg-white rounded p-2"><p class="text-green-600 font-medium">+${t.p}%</p><p class="font-bold">${formatCurrency(t.price)}</p><p class="text-xs text-gray-500">${formatCurrency(t.pl)}</p></div>`).join('');
+            } else { document.getElementById('tradeCalc').classList.add('hidden'); }
+        }
+
+        async function createTrade(e) {
+            e.preventDefault();
+            const instrument = document.getElementById('tradeInstrument');
+            const lotSize = parseInt(instrument.selectedOptions[0]?.dataset.lot) || 1;
+            const entries = [];
+            document.querySelectorAll('.entry-row').forEach(row => { const price = parseFloat(row.querySelector('.entry-price').value); const lots = parseInt(row.querySelector('.entry-lots').value); entries.push({ price, lots, quantity: lots * lotSize }); });
+            await api('/api/trades', { method: 'POST', body: JSON.stringify({ symbol: document.getElementById('tradeSymbol').value.toUpperCase(), instrument_type: instrument.value, lot_size: lotSize, entries }) });
+            hideModal(); renderTrades();
+        }
+
+        async function showTradeDetail(tradeId) {
+            const trade = await api(`/api/trades/${tradeId}`);
+            const totalQty = trade.entries.reduce((s, e) => s + e.quantity, 0);
+            const targets = [3, 5, 10, 20].map(p => ({ p, price: trade.avg_price * (1 + p/100) }));
+            showModal(`<div class="p-6"><div class="flex items-center justify-between mb-4"><h2 class="text-xl font-bold">Trade #${trade.trade_number}</h2><span class="px-2 py-1 rounded text-sm ${trade.status === 'OPEN' ? 'bg-yellow-100 text-yellow-800' : trade.outcome === 'WIN' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${trade.status === 'OPEN' ? 'OPEN' : trade.outcome}</span></div><div class="space-y-4"><div class="bg-gray-50 rounded-lg p-4"><p class="font-semibold">${trade.symbol}</p><p class="text-sm text-gray-500">${LOT_SIZES[trade.instrument_type]?.name || trade.instrument_type} • ${totalQty} qty @ ${formatCurrency(trade.avg_price)} avg</p></div><div><p class="text-sm font-medium mb-2">Entries</p><div class="space-y-2">${trade.entries.map((e, i) => `<div class="flex justify-between p-2 bg-gray-50 rounded"><span>Entry #${i+1}</span><span>${formatCurrency(e.price)} × ${e.lots} lots = ${e.quantity} qty</span></div>`).join('')}</div></div>${trade.status === 'OPEN' ? `<div class="bg-green-50 rounded-lg p-4"><p class="text-sm font-medium mb-2">Targets</p><div class="grid grid-cols-4 gap-2 text-center">${targets.map(t => `<div class="bg-white rounded p-2"><p class="text-green-600 font-medium">+${t.p}%</p><p class="font-bold">${formatCurrency(t.price)}</p></div>`).join('')}</div></div>` : `<div class="bg-gray-50 rounded-lg p-4"><div class="flex justify-between mb-2"><span>Exit Price</span><span class="font-medium">${formatCurrency(trade.exit_price)}</span></div><div class="flex justify-between"><span>Return</span><span class="font-bold ${trade.return_amount >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(trade.return_amount)} (${formatPercent(trade.return_percent)})</span></div></div>${trade.learnings ? `<div class="bg-gray-50 rounded-lg p-4"><p class="text-sm text-gray-500">Learnings</p><p>${trade.learnings}</p></div>` : ''}${trade.screenshot ? `<div class="bg-gray-50 rounded-lg p-4"><p class="text-sm text-gray-500 mb-2">Screenshot <span class="text-xs">(click to enlarge)</span></p><img src="${trade.screenshot}" class="w-full h-48 object-cover rounded-lg cursor-zoom-in hover:opacity-90 transition" onclick="openLightbox('${trade.screenshot}')"></div>` : ''}`}<button onclick="hideModal()" class="w-full px-4 py-2 bg-gray-200 rounded-lg">Close</button></div></div>`);
+        }
+
+        async function showCloseTradeModal(tradeId) {
+            const trade = await api(`/api/trades/${tradeId}`);
+            showModal(`<div class="p-6"><h2 class="text-xl font-bold mb-4">Close Trade #${trade.trade_number}</h2><form id="closeTradeForm" class="space-y-4"><div class="bg-gray-50 rounded-lg p-3"><p class="font-medium">${trade.symbol}</p><p class="text-sm text-gray-500">Avg: ${formatCurrency(trade.avg_price)}</p></div><div><label class="block text-sm font-medium mb-1">Exit Price</label><input type="number" step="0.05" id="exitPrice" required class="w-full px-3 py-2 border rounded-lg"></div><select id="tradeOutcome" class="w-full px-3 py-2 border rounded-lg"><option value="">Auto-detect outcome</option><option value="WIN">Win</option><option value="LOSS">Loss</option></select><label class="flex items-center gap-2"><input type="checkbox" id="againstTrend"> Against Trend?</label><textarea id="tradeLearnings" placeholder="Learnings..." class="w-full px-3 py-2 border rounded-lg" rows="2"></textarea><div><label class="block text-sm font-medium mb-1">Screenshot (Paste with Ctrl+V)</label><div id="screenshotArea" class="w-full h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition" onclick="document.getElementById('screenshotArea').focus()" tabindex="0"><span id="screenshotPlaceholder" class="text-gray-400 text-sm"><i class="fas fa-paste mr-2"></i>Click here and paste screenshot (Ctrl+V)</span><img id="screenshotPreview" class="hidden max-h-full max-w-full object-contain rounded"></div><input type="hidden" id="screenshotData"></div><div class="flex gap-2"><button type="button" onclick="hideModal()" class="flex-1 px-4 py-2 bg-gray-200 rounded-lg">Cancel</button><button type="submit" class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg">Close Trade</button></div></form></div>`);
+            
+            // Setup paste listener for screenshot
+            const screenshotArea = document.getElementById('screenshotArea');
+            screenshotArea.addEventListener('paste', handleScreenshotPaste);
+            document.addEventListener('paste', handleScreenshotPaste);
+            
+            document.getElementById('closeTradeForm').addEventListener('submit', async (ev) => { 
+                ev.preventDefault(); 
+                await api(`/api/trades/${tradeId}/close`, { method: 'POST', body: JSON.stringify({ exit_price: parseFloat(document.getElementById('exitPrice').value), outcome: document.getElementById('tradeOutcome').value || null, against_trend: document.getElementById('againstTrend').checked, learnings: document.getElementById('tradeLearnings').value || null, screenshot: document.getElementById('screenshotData').value || null }) }); 
+                document.removeEventListener('paste', handleScreenshotPaste);
+                hideModal(); 
+                renderTrades(); 
+            });
+        }
+
+        function handleScreenshotPaste(e) {
+            const items = e.clipboardData?.items;
+            if (!items) return;
+            
+            for (const item of items) {
+                if (item.type.startsWith('image/')) {
+                    e.preventDefault();
+                    const file = item.getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const base64 = event.target.result;
+                        document.getElementById('screenshotData').value = base64;
+                        document.getElementById('screenshotPreview').src = base64;
+                        document.getElementById('screenshotPreview').classList.remove('hidden');
+                        document.getElementById('screenshotPlaceholder').classList.add('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                    break;
+                }
+            }
+        }
+
+        async function showEditTradeModal(tradeId) {
+            const trade = await api(`/api/trades/${tradeId}`);
+            showModal(`<div class="p-6"><h2 class="text-xl font-bold mb-4">Edit Trade #${trade.trade_number}</h2><form id="editTradeForm" class="space-y-4"><div class="bg-gray-50 rounded-lg p-3"><p class="font-medium">${trade.symbol}</p><p class="text-sm text-gray-500">${LOT_SIZES[trade.instrument_type]?.name || trade.instrument_type}</p></div><div><label class="text-sm font-medium">Add Entry (Averaging)</label><div class="flex gap-2 mt-1"><input type="number" step="0.05" id="addEntryPrice" placeholder="Price" class="flex-1 px-3 py-2 border rounded-lg"><input type="number" min="1" value="1" id="addEntryLots" placeholder="Lots" class="w-20 px-3 py-2 border rounded-lg"><button type="button" onclick="addEntryToTrade(${tradeId}, ${trade.lot_size})" class="px-3 py-2 bg-blue-600 text-white rounded-lg">Add</button></div></div><div><label class="block text-sm font-medium mb-1">Learnings</label><textarea id="editLearnings" class="w-full px-3 py-2 border rounded-lg" rows="2">${trade.learnings || ''}</textarea></div><label class="flex items-center gap-2"><input type="checkbox" id="editAgainstTrend" ${trade.against_trend ? 'checked' : ''}> Against Trend?</label><div class="flex gap-2"><button type="button" onclick="hideModal()" class="flex-1 px-4 py-2 bg-gray-200 rounded-lg">Cancel</button><button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">Save</button></div></form></div>`);
+            document.getElementById('editTradeForm').addEventListener('submit', async (ev) => { ev.preventDefault(); await api(`/api/trades/${tradeId}`, { method: 'PATCH', body: JSON.stringify({ against_trend: document.getElementById('editAgainstTrend').checked, learnings: document.getElementById('editLearnings').value || null }) }); hideModal(); renderTrades(); });
+        }
+
+        async function addEntryToTrade(tradeId, lotSize) { const price = parseFloat(document.getElementById('addEntryPrice').value); const lots = parseInt(document.getElementById('addEntryLots').value); if (!price || !lots) return; await api(`/api/trades/${tradeId}/entries`, { method: 'POST', body: JSON.stringify({ price, lots }) }); hideModal(); renderTrades(); }
+        async function deleteTrade(tradeId) { if (!confirm('Delete this trade?')) return; await api(`/api/trades/${tradeId}`, { method: 'DELETE' }); renderTrades(); }
+
+        // ==================== INVESTMENTS ====================
+        async function renderInvestments() {
+            const [investments, withdrawals] = await Promise.all([api('/api/investments'), api('/api/investments/withdrawals')]);
+            const totalInvested = investments.reduce((s, i) => s + i.amount, 0);
+            const totalWithdrawn = withdrawals.reduce((s, w) => s + w.amount, 0);
+            const reserve = investments.filter(i => i.type === 'RESERVE').reduce((s, i) => s + i.amount, 0);
+            document.getElementById('mainContent').innerHTML = `<div class="space-y-6"><div class="flex items-center justify-between"><h1 class="text-3xl font-bold">Investments</h1><div class="flex gap-2"><button onclick="showInvestmentModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg"><i class="fas fa-plus mr-2"></i>Add Investment</button><button onclick="showWithdrawalModal()" class="px-4 py-2 bg-gray-200 rounded-lg"><i class="fas fa-arrow-down mr-2"></i>Withdraw</button></div></div><div class="grid grid-cols-1 md:grid-cols-4 gap-4"><div class="bg-white rounded-xl p-6 shadow-sm"><p class="text-gray-500 text-sm mb-1">Total Invested</p><p class="text-2xl font-bold text-green-600">${formatCurrency(totalInvested)}</p></div><div class="bg-white rounded-xl p-6 shadow-sm"><p class="text-gray-500 text-sm mb-1">Total Withdrawn</p><p class="text-2xl font-bold text-red-600">${formatCurrency(totalWithdrawn)}</p></div><div class="bg-white rounded-xl p-6 shadow-sm"><p class="text-gray-500 text-sm mb-1">Net Invested</p><p class="text-2xl font-bold">${formatCurrency(totalInvested - totalWithdrawn)}</p></div><div class="bg-white rounded-xl p-6 shadow-sm"><p class="text-gray-500 text-sm mb-1">Reserve</p><p class="text-2xl font-bold text-blue-600">${formatCurrency(reserve)}</p></div></div><div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="bg-white rounded-xl p-6 shadow-sm"><h3 class="font-semibold mb-4">Investments</h3>${investments.length === 0 ? '<p class="text-gray-500 text-center py-8">No investments yet</p>' : `<div class="space-y-3">${investments.map(i => `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center"><i class="fas fa-arrow-up text-green-600"></i></div><div><p class="font-medium">${i.type.replace('_', ' ')}</p><p class="text-sm text-gray-500">${formatDate(i.date)} • ${i.source.replace('_', ' ')}</p></div></div><div class="flex items-center gap-2"><p class="font-bold text-green-600">${formatCurrency(i.amount)}</p><button onclick="showEditInvestmentModal(${i.id})" class="p-2 text-gray-500 hover:bg-gray-200 rounded-lg"><i class="fas fa-edit"></i></button><button onclick="deleteInvestment(${i.id})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg"><i class="fas fa-trash"></i></button></div></div>`).join('')}</div>`}</div><div class="bg-white rounded-xl p-6 shadow-sm"><h3 class="font-semibold mb-4">Withdrawals</h3>${withdrawals.length === 0 ? '<p class="text-gray-500 text-center py-8">No withdrawals yet</p>' : `<div class="space-y-3">${withdrawals.map(w => `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center"><i class="fas fa-arrow-down text-red-600"></i></div><div><p class="font-medium">Withdrawal</p><p class="text-sm text-gray-500">${formatDate(w.date)}${w.reason ? ` • ${w.reason}` : ''}</p></div></div><div class="flex items-center gap-2"><p class="font-bold text-red-600">-${formatCurrency(w.amount)}</p><button onclick="deleteWithdrawal(${w.id})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg"><i class="fas fa-trash"></i></button></div></div>`).join('')}</div>`}</div></div></div>`;
+        }
+
+        function showInvestmentModal(investment = null) {
+            const isEdit = investment !== null;
+            showModal(`<div class="p-6"><h2 class="text-xl font-bold mb-4">${isEdit ? 'Edit' : 'Add'} Investment</h2><form id="investmentForm" class="space-y-4"><div><label class="block text-sm font-medium mb-1">Type</label><select id="invType" required class="w-full px-3 py-2 border rounded-lg"><option value="TRADING_CAPITAL" ${investment?.type === 'TRADING_CAPITAL' ? 'selected' : ''}>Trading Capital</option><option value="RESERVE" ${investment?.type === 'RESERVE' ? 'selected' : ''}>Reserve</option><option value="EMERGENCY" ${investment?.type === 'EMERGENCY' ? 'selected' : ''}>Emergency Fund</option></select></div><div class="grid grid-cols-2 gap-4"><div><label class="block text-sm font-medium mb-1">Amount (₹)</label><input type="number" id="invAmount" required class="w-full px-3 py-2 border rounded-lg" value="${investment?.amount || ''}"></div><div><label class="block text-sm font-medium mb-1">Date</label><input type="date" id="invDate" required class="w-full px-3 py-2 border rounded-lg" value="${investment?.date?.split('T')[0] || new Date().toISOString().split('T')[0]}"></div></div><div><label class="block text-sm font-medium mb-1">Source</label><select id="invSource" required class="w-full px-3 py-2 border rounded-lg"><option value="SALARY" ${investment?.source === 'SALARY' ? 'selected' : ''}>Salary</option><option value="SAVINGS" ${investment?.source === 'SAVINGS' ? 'selected' : ''}>Savings</option><option value="PROFIT_REINVEST" ${investment?.source === 'PROFIT_REINVEST' ? 'selected' : ''}>Profit Reinvestment</option><option value="OTHER" ${investment?.source === 'OTHER' ? 'selected' : ''}>Other</option></select></div><div><label class="block text-sm font-medium mb-1">Notes</label><input type="text" id="invNotes" class="w-full px-3 py-2 border rounded-lg" value="${investment?.notes || ''}"></div><div class="flex gap-2"><button type="button" onclick="hideModal()" class="flex-1 px-4 py-2 bg-gray-200 rounded-lg">Cancel</button><button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">${isEdit ? 'Update' : 'Add'}</button></div></form></div>`);
+            document.getElementById('investmentForm').addEventListener('submit', async (ev) => { ev.preventDefault(); const data = { type: document.getElementById('invType').value, amount: parseFloat(document.getElementById('invAmount').value), date: document.getElementById('invDate').value, source: document.getElementById('invSource').value, notes: document.getElementById('invNotes').value || null }; if (isEdit) { await api(`/api/investments/${investment.id}`, { method: 'PATCH', body: JSON.stringify(data) }); } else { await api('/api/investments', { method: 'POST', body: JSON.stringify(data) }); } hideModal(); renderInvestments(); });
+        }
+
+        async function showEditInvestmentModal(id) { const investment = await api(`/api/investments/${id}`); showInvestmentModal(investment); }
+        async function deleteInvestment(id) { if (!confirm('Delete this investment?')) return; await api(`/api/investments/${id}`, { method: 'DELETE' }); renderInvestments(); }
+        async function deleteWithdrawal(id) { if (!confirm('Delete this withdrawal?')) return; await api(`/api/investments/withdrawals/${id}`, { method: 'DELETE' }); renderInvestments(); }
+
+        function showWithdrawalModal() {
+            showModal(`<div class="p-6"><h2 class="text-xl font-bold mb-4">Record Withdrawal</h2><form id="withdrawalForm" class="space-y-4"><div class="grid grid-cols-2 gap-4"><div><label class="block text-sm font-medium mb-1">Amount (₹)</label><input type="number" id="wdAmount" required class="w-full px-3 py-2 border rounded-lg"></div><div><label class="block text-sm font-medium mb-1">Date</label><input type="date" id="wdDate" required class="w-full px-3 py-2 border rounded-lg" value="${new Date().toISOString().split('T')[0]}"></div></div><div><label class="block text-sm font-medium mb-1">Reason</label><input type="text" id="wdReason" class="w-full px-3 py-2 border rounded-lg"></div><div class="flex gap-2"><button type="button" onclick="hideModal()" class="flex-1 px-4 py-2 bg-gray-200 rounded-lg">Cancel</button><button type="submit" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg">Withdraw</button></div></form></div>`);
+            document.getElementById('withdrawalForm').addEventListener('submit', async (e) => { e.preventDefault(); await api('/api/investments/withdrawals', { method: 'POST', body: JSON.stringify({ amount: parseFloat(document.getElementById('wdAmount').value), date: document.getElementById('wdDate').value, reason: document.getElementById('wdReason').value || null }) }); hideModal(); renderInvestments(); });
+        }
+
+        // ==================== EXPENSES ====================
+        async function renderExpenses() {
+            const expenses = await api('/api/expenses');
+            const active = expenses.filter(e => e.is_active);
+            const monthly = active.filter(e => e.billing_cycle === 'MONTHLY').reduce((s, e) => s + e.amount, 0);
+            const yearly = active.filter(e => e.billing_cycle === 'YEARLY').reduce((s, e) => s + e.amount, 0);
+            const categories = { 'TRADINGVIEW': 'TradingView', 'AI_TOOLS': 'AI Tools', 'BROKERAGE': 'Brokerage', 'DATA_FEED': 'Data Feed', 'EDUCATION': 'Education', 'PLATFORM': 'Platform', 'OTHER': 'Other' };
+            document.getElementById('mainContent').innerHTML = `<div class="space-y-6"><div class="flex items-center justify-between"><h1 class="text-3xl font-bold">Expenses</h1><button onclick="showExpenseModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg"><i class="fas fa-plus mr-2"></i>Add Expense</button></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div class="bg-white rounded-xl p-6 shadow-sm"><p class="text-gray-500 text-sm mb-1">Monthly</p><p class="text-2xl font-bold">${formatCurrency(monthly)}</p></div><div class="bg-white rounded-xl p-6 shadow-sm"><p class="text-gray-500 text-sm mb-1">Yearly</p><p class="text-2xl font-bold">${formatCurrency(yearly)}</p></div><div class="bg-white rounded-xl p-6 shadow-sm"><p class="text-gray-500 text-sm mb-1">Annual Total</p><p class="text-2xl font-bold">${formatCurrency(monthly * 12 + yearly)}</p></div></div><div class="bg-white rounded-xl p-6 shadow-sm"><h3 class="font-semibold mb-4">All Expenses</h3>${expenses.length === 0 ? '<p class="text-gray-500 text-center py-8">No expenses added</p>' : `<div class="space-y-3">${expenses.map(e => `<div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg"><div class="flex items-center gap-3"><div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center"><i class="fas fa-receipt text-blue-600"></i></div><div><div class="flex items-center gap-2"><p class="font-medium">${e.name}</p><span class="text-xs bg-gray-200 px-2 py-0.5 rounded">${categories[e.category]}</span>${!e.is_active ? '<span class="text-xs bg-gray-300 px-2 py-0.5 rounded">Inactive</span>' : ''}</div><p class="text-sm text-gray-500">${e.billing_cycle}${e.next_due_date ? ` • Due: ${formatDate(e.next_due_date)}` : ''}</p></div></div><div class="flex items-center gap-3"><p class="font-bold">${formatCurrency(e.amount)}</p>${e.is_active && e.next_due_date ? `<button onclick="recordPayment(${e.id})" class="text-sm px-3 py-1 bg-green-100 text-green-700 rounded-lg hover:bg-green-200">Pay</button>` : ''}<button onclick="showEditExpenseModal(${e.id})" class="p-2 text-gray-500 hover:bg-gray-200 rounded-lg"><i class="fas fa-edit"></i></button><button onclick="deleteExpense(${e.id})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg"><i class="fas fa-trash"></i></button></div></div>`).join('')}</div>`}</div></div>`;
+        }
+
+        function showExpenseModal(expense = null) {
+            const isEdit = expense !== null;
+            showModal(`<div class="p-6"><h2 class="text-xl font-bold mb-4">${isEdit ? 'Edit' : 'Add'} Expense</h2><form id="expenseForm" class="space-y-4"><div><label class="block text-sm font-medium mb-1">Name</label><input type="text" id="expName" required class="w-full px-3 py-2 border rounded-lg" placeholder="e.g., TradingView Pro" value="${expense?.name || ''}"></div><div class="grid grid-cols-2 gap-4"><div><label class="block text-sm font-medium mb-1">Category</label><select id="expCategory" required class="w-full px-3 py-2 border rounded-lg"><option value="TRADINGVIEW" ${expense?.category === 'TRADINGVIEW' ? 'selected' : ''}>TradingView</option><option value="AI_TOOLS" ${expense?.category === 'AI_TOOLS' ? 'selected' : ''}>AI Tools</option><option value="BROKERAGE" ${expense?.category === 'BROKERAGE' ? 'selected' : ''}>Brokerage</option><option value="DATA_FEED" ${expense?.category === 'DATA_FEED' ? 'selected' : ''}>Data Feed</option><option value="EDUCATION" ${expense?.category === 'EDUCATION' ? 'selected' : ''}>Education</option><option value="PLATFORM" ${expense?.category === 'PLATFORM' ? 'selected' : ''}>Platform</option><option value="OTHER" ${expense?.category === 'OTHER' ? 'selected' : ''}>Other</option></select></div><div><label class="block text-sm font-medium mb-1">Amount (₹)</label><input type="number" id="expAmount" required class="w-full px-3 py-2 border rounded-lg" value="${expense?.amount || ''}"></div></div><div class="grid grid-cols-2 gap-4"><div><label class="block text-sm font-medium mb-1">Billing Cycle</label><select id="expCycle" required class="w-full px-3 py-2 border rounded-lg"><option value="MONTHLY" ${expense?.billing_cycle === 'MONTHLY' ? 'selected' : ''}>Monthly</option><option value="YEARLY" ${expense?.billing_cycle === 'YEARLY' ? 'selected' : ''}>Yearly</option><option value="ONE_TIME" ${expense?.billing_cycle === 'ONE_TIME' ? 'selected' : ''}>One Time</option></select></div><div><label class="block text-sm font-medium mb-1">Next Due Date</label><input type="date" id="expDue" class="w-full px-3 py-2 border rounded-lg" value="${expense?.next_due_date?.split('T')[0] || ''}"></div></div><div class="flex items-center gap-4"><label class="flex items-center gap-2"><input type="checkbox" id="expAutoRenew" ${expense?.auto_renew !== false ? 'checked' : ''}> Auto-renew</label><label class="flex items-center gap-2"><input type="checkbox" id="expActive" ${expense?.is_active !== false ? 'checked' : ''}> Active</label></div><div class="flex gap-2"><button type="button" onclick="hideModal()" class="flex-1 px-4 py-2 bg-gray-200 rounded-lg">Cancel</button><button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">${isEdit ? 'Update' : 'Add'}</button></div></form></div>`);
+            document.getElementById('expenseForm').addEventListener('submit', async (ev) => { ev.preventDefault(); const data = { name: document.getElementById('expName').value, category: document.getElementById('expCategory').value, amount: parseFloat(document.getElementById('expAmount').value), billing_cycle: document.getElementById('expCycle').value, next_due_date: document.getElementById('expDue').value || null, auto_renew: document.getElementById('expAutoRenew').checked, is_active: document.getElementById('expActive').checked }; if (isEdit) { await api(`/api/expenses/${expense.id}`, { method: 'PATCH', body: JSON.stringify(data) }); } else { await api('/api/expenses', { method: 'POST', body: JSON.stringify(data) }); } hideModal(); renderExpenses(); });
+        }
+
+        async function showEditExpenseModal(id) { const expense = await api(`/api/expenses/${id}`); showExpenseModal(expense); }
+        async function deleteExpense(id) { if (!confirm('Delete this expense?')) return; await api(`/api/expenses/${id}`, { method: 'DELETE' }); renderExpenses(); }
+        async function recordPayment(expenseId) { await api(`/api/expenses/${expenseId}/payment`, { method: 'POST' }); renderExpenses(); }
+
+        // ==================== HOLIDAYS ====================
+        async function renderHolidays() {
+            const holidays = await api('/api/holidays');
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth();
+            const holidayMap = {};
+            holidays.forEach(h => { const d = new Date(h.date); const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`; if (!holidayMap[key]) holidayMap[key] = []; holidayMap[key].push(h); });
+            document.getElementById('mainContent').innerHTML = `<div class="space-y-4"><div class="flex items-center justify-between"><h1 class="text-3xl font-bold">Market Holidays 2026</h1><button onclick="showHolidayModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg"><i class="fas fa-plus mr-2"></i>Add</button></div><div class="flex gap-2"><button class="holiday-tab-btn px-4 py-2 bg-orange-600 text-white rounded-lg text-sm" data-type="TRADING">Trading (${holidays.filter(h=>h.type==='TRADING').length})</button><button class="holiday-tab-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm" data-type="CLEARING">Clearing (${holidays.filter(h=>h.type==='CLEARING').length})</button></div><div class="grid grid-cols-1 lg:grid-cols-5 gap-4"><div class="lg:col-span-2" id="calendarContainer">${renderCompactCalendar(currentYear, currentMonth, holidayMap, 'TRADING')}</div><div class="lg:col-span-3 bg-white rounded-xl p-4 shadow-sm" id="holidayList">${renderHolidayTable(holidays, 'TRADING')}</div></div></div>`;
+            document.querySelectorAll('.holiday-tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.holiday-tab-btn').forEach(b => { b.classList.remove('bg-orange-600', 'bg-purple-600', 'text-white'); b.classList.add('bg-gray-200', 'text-gray-700'); });
+                    btn.classList.remove('bg-gray-200', 'text-gray-700'); btn.classList.add(btn.dataset.type === 'TRADING' ? 'bg-orange-600' : 'bg-purple-600', 'text-white');
+                    document.getElementById('calendarContainer').innerHTML = renderCompactCalendar(currentYear, currentMonth, holidayMap, btn.dataset.type);
+                    document.getElementById('holidayList').innerHTML = renderHolidayTable(holidays, btn.dataset.type);
+                    attachCalendarNav(holidayMap, btn.dataset.type);
+                });
+            });
+            attachCalendarNav(holidayMap, 'TRADING');
+        }
+
+        function attachCalendarNav(holidayMap, type) { document.querySelectorAll('.cal-nav').forEach(btn => { btn.addEventListener('click', () => { const year = parseInt(btn.dataset.year); const month = parseInt(btn.dataset.month); document.getElementById('calendarContainer').innerHTML = renderCompactCalendar(year, month, holidayMap, type); attachCalendarNav(holidayMap, type); }); }); }
+
+        function renderCompactCalendar(year, month, holidayMap, type) {
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const startDay = firstDay.getDay();
+            const daysInMonth = lastDay.getDate();
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const today = new Date();
+            let html = `<div class="bg-white rounded-xl p-3 shadow-sm"><div class="flex items-center justify-between mb-2"><button class="cal-nav p-1 hover:bg-gray-100 rounded text-sm" data-year="${month === 0 ? year - 1 : year}" data-month="${month === 0 ? 11 : month - 1}"><i class="fas fa-chevron-left"></i></button><span class="font-bold text-sm">${monthNames[month]} ${year}</span><button class="cal-nav p-1 hover:bg-gray-100 rounded text-sm" data-year="${month === 11 ? year + 1 : year}" data-month="${month === 11 ? 0 : month + 1}"><i class="fas fa-chevron-right"></i></button></div><div class="grid grid-cols-7 gap-0.5 text-center text-xs"><div class="p-0.5 font-medium text-red-500">S</div><div class="p-0.5 font-medium">M</div><div class="p-0.5 font-medium">T</div><div class="p-0.5 font-medium">W</div><div class="p-0.5 font-medium">T</div><div class="p-0.5 font-medium">F</div><div class="p-0.5 font-medium text-blue-500">S</div>`;
+            for (let i = 0; i < startDay; i++) { html += `<div class="p-0.5"></div>`; }
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(year, month, day);
+                const dayOfWeek = date.getDay();
+                const isToday = date.toDateString() === today.toDateString();
+                const key = `${year}-${month}-${day}`;
+                const dayHolidays = (holidayMap[key] || []).filter(h => h.type === type);
+                const isHoliday = dayHolidays.length > 0;
+                let bgClass = '';
+                let textClass = 'text-gray-700';
+                if (dayOfWeek === 0) { bgClass = 'bg-red-50'; textClass = 'text-red-500'; }
+                if (dayOfWeek === 6) { bgClass = 'bg-blue-50'; textClass = 'text-blue-500'; }
+                if (isHoliday) bgClass = type === 'TRADING' ? 'bg-orange-300' : 'bg-purple-300';
+                if (isToday) bgClass += ' ring-1 ring-blue-500';
+                html += `<div class="p-0.5 rounded ${bgClass} ${textClass} text-xs" title="${dayHolidays.map(h => h.description).join(', ')}">${day}</div>`;
+            }
+            html += `</div><div class="mt-2 flex gap-2 text-xs"><span class="flex items-center gap-1"><span class="w-3 h-3 ${type === 'TRADING' ? 'bg-orange-300' : 'bg-purple-300'} rounded"></span>Holiday</span><span class="flex items-center gap-1"><span class="w-3 h-3 bg-red-50 border rounded"></span>Sun</span><span class="flex items-center gap-1"><span class="w-3 h-3 bg-blue-50 border rounded"></span>Sat</span></div></div>`;
+            return html;
+        }
+
+        function renderHolidayTable(holidays, type) {
+            const filtered = holidays.filter(h => h.type === type).sort((a, b) => new Date(a.date) - new Date(b.date));
+            const now = new Date();
+            return `<table class="w-full text-sm"><thead class="bg-gray-50"><tr><th class="px-2 py-1 text-left">#</th><th class="px-2 py-1 text-left">Date</th><th class="px-2 py-1 text-left">Day</th><th class="px-2 py-1 text-left">Description</th><th class="px-2 py-1 text-right">Days</th></tr></thead><tbody>${filtered.map((h, i) => { const d = new Date(h.date); const isPast = d < now; const days = daysUntil(h.date); return `<tr class="${isPast ? 'opacity-40' : ''} ${days <= 7 && !isPast ? 'bg-orange-50' : ''}"><td class="px-2 py-1">${i+1}</td><td class="px-2 py-1 font-medium">${d.getDate()}-${d.toLocaleDateString('en-IN', { month: 'short' })}</td><td class="px-2 py-1">${d.toLocaleDateString('en-IN', { weekday: 'short' })}</td><td class="px-2 py-1">${h.description}</td><td class="px-2 py-1 text-right ${days <= 3 && !isPast ? 'text-red-600 font-bold' : ''}">${isPast ? '-' : days + 'd'}</td></tr>`; }).join('')}</tbody></table>`;
+        }
+
+        function showHolidayModal() {
+            showModal(`<div class="p-6"><h2 class="text-xl font-bold mb-4">Add Holiday</h2><form id="holidayForm" class="space-y-4"><div><label class="block text-sm font-medium mb-1">Date</label><input type="date" id="holDate" required class="w-full px-3 py-2 border rounded-lg"></div><div><label class="block text-sm font-medium mb-1">Description</label><input type="text" id="holDesc" required class="w-full px-3 py-2 border rounded-lg"></div><div><label class="block text-sm font-medium mb-1">Type</label><select id="holType" class="w-full px-3 py-2 border rounded-lg"><option value="TRADING">Trading Holiday</option><option value="CLEARING">Clearing Holiday</option></select></div><div class="flex gap-2"><button type="button" onclick="hideModal()" class="flex-1 px-4 py-2 bg-gray-200 rounded-lg">Cancel</button><button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">Add</button></div></form></div>`);
+            document.getElementById('holidayForm').addEventListener('submit', async (e) => { e.preventDefault(); await api('/api/holidays', { method: 'POST', body: JSON.stringify({ date: document.getElementById('holDate').value, description: document.getElementById('holDesc').value, type: document.getElementById('holType').value }) }); hideModal(); renderHolidays(); });
+        }
+
+        // ==================== 1C CALCULATION ====================
+        async function renderCalculation() {
+            const settings = await api('/api/settings');
+            document.getElementById('mainContent').innerHTML = `<div class="space-y-4"><div><h1 class="text-3xl font-bold">1 Crore Calculation</h1><p class="text-gray-500">Journey from ₹40K to ₹1 Crore</p></div><div class="bg-white rounded-xl p-4 shadow-sm"><div class="grid grid-cols-2 md:grid-cols-4 gap-3"><div><label class="block text-xs font-medium mb-1">Initial Capital (₹)</label><input type="number" id="calcInitial" value="40000" class="w-full px-2 py-1.5 border rounded text-sm" oninput="calculatePlan()"></div><div><label class="block text-xs font-medium mb-1">Return Per Trade (%)</label><input type="number" step="0.5" id="calcReturn" value="4" class="w-full px-2 py-1.5 border rounded text-sm" oninput="calculatePlan()"></div><div><label class="block text-xs font-medium mb-1">Lot Size (Qty)</label><input type="number" id="calcLotSize" value="${settings.nifty_lot_size || 65}" class="w-full px-2 py-1.5 border rounded text-sm" oninput="calculatePlan()"></div><div><label class="block text-xs font-medium mb-1">Per Lot Margin (₹)</label><input type="number" id="calcMargin" value="6500" class="w-full px-2 py-1.5 border rounded text-sm" oninput="calculatePlan()"></div></div></div><div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-4 text-white"><div class="grid grid-cols-4 gap-3"><div class="bg-white/20 rounded-lg p-3 text-center"><p class="text-xl font-bold" id="milestone50">₹0</p><p class="text-xs opacity-80">50 Trades</p></div><div class="bg-white/20 rounded-lg p-3 text-center"><p class="text-xl font-bold" id="milestone100">₹0</p><p class="text-xs opacity-80">100 Trades</p></div><div class="bg-white/20 rounded-lg p-3 text-center"><p class="text-xl font-bold" id="milestone150">₹0</p><p class="text-xs opacity-80">150 Trades</p></div><div class="bg-white/20 rounded-lg p-3 text-center"><p class="text-xl font-bold" id="milestone200">₹0</p><p class="text-xs opacity-80">200 Trades</p></div></div></div><div class="bg-white rounded-xl p-4 shadow-sm"><canvas id="growthChart" height="50"></canvas></div><div class="bg-white rounded-xl p-4 shadow-sm"><div class="overflow-auto" style="max-height: 350px;"><table class="w-full text-xs"><thead class="bg-gray-50 sticky top-0"><tr><th class="px-2 py-1 text-left">#</th><th class="px-2 py-1 text-right">Before</th><th class="px-2 py-1 text-right">Lots</th><th class="px-2 py-1 text-right">Used</th><th class="px-2 py-1 text-right">In Hand</th><th class="px-2 py-1 text-right">%</th><th class="px-2 py-1 text-right">Profit</th><th class="px-2 py-1 text-right">After</th></tr></thead><tbody id="tradeTableBody"></tbody></table></div></div></div>`;
+            calculatePlan();
+        }
+
+        let calculatedPlan = [];
+        let growthChartInstance = null;
+
+        function calculatePlan() {
+            const initial = parseFloat(document.getElementById('calcInitial').value) || 40000;
+            const returnPct = parseFloat(document.getElementById('calcReturn').value) || 4;
+            const perLotMargin = parseFloat(document.getElementById('calcMargin').value) || 6500;
+            calculatedPlan = [];
+            let beforeTrade = initial;
+            for (let i = 1; i <= 200; i++) {
+                const lots = Math.floor(beforeTrade / perLotMargin);
+                const capitalUsed = lots * perLotMargin;
+                const moneyInHand = beforeTrade - capitalUsed;
+                const profit = capitalUsed * (returnPct / 100);
+                const afterTrade = moneyInHand + capitalUsed + profit;
+                calculatedPlan.push({ trade: i, before: beforeTrade, lots, capitalUsed, moneyInHand, returnPct, profit, after: afterTrade });
+                beforeTrade = afterTrade;
+            }
+            document.getElementById('milestone50').textContent = formatCompact(calculatedPlan[49]?.after || 0);
+            document.getElementById('milestone100').textContent = formatCompact(calculatedPlan[99]?.after || 0);
+            document.getElementById('milestone150').textContent = formatCompact(calculatedPlan[149]?.after || 0);
+            document.getElementById('milestone200').textContent = formatCompact(calculatedPlan[199]?.after || 0);
+            updateGrowthChart();
+            renderTradeTable();
+        }
+
+        function formatCompact(num) { if (num >= 10000000) return '₹' + (num / 10000000).toFixed(2) + 'Cr'; if (num >= 100000) return '₹' + (num / 100000).toFixed(2) + 'L'; if (num >= 1000) return '₹' + (num / 1000).toFixed(1) + 'K'; return '₹' + num.toFixed(0); }
+
+        function updateGrowthChart() {
+            const ctx = document.getElementById('growthChart').getContext('2d');
+            if (growthChartInstance) growthChartInstance.destroy();
+            const labels = calculatedPlan.filter((_, i) => i % 10 === 0 || i === 199).map(p => p.trade);
+            const data = calculatedPlan.filter((_, i) => i % 10 === 0 || i === 199).map(p => p.after);
+            growthChartInstance = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ data, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.4, pointRadius: 2 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: (v) => formatCompact(v) } } } } });
+        }
+
+        function renderTradeTable() {
+            const rows = calculatedPlan.map(p => `<tr class="border-b hover:bg-gray-50 ${p.trade % 50 === 0 ? 'bg-blue-50 font-medium' : ''}"><td class="px-2 py-1">${p.trade}</td><td class="px-2 py-1 text-right">${formatCurrency(p.before)}</td><td class="px-2 py-1 text-right">${p.lots}</td><td class="px-2 py-1 text-right">${formatCurrency(p.capitalUsed)}</td><td class="px-2 py-1 text-right text-orange-600">${formatCurrency(p.moneyInHand)}</td><td class="px-2 py-1 text-right text-green-600">+${p.returnPct}%</td><td class="px-2 py-1 text-right text-green-600">${formatCurrency(p.profit)}</td><td class="px-2 py-1 text-right font-medium">${formatCurrency(p.after)}</td></tr>`).join('');
+            document.getElementById('tradeTableBody').innerHTML = rows;
+        }
+
+        // ==================== JOURNAL ====================
+        let journalChartInstance = null;
+        
+        async function renderJournal() {
+            const trades = await api('/api/trades');
+            const closedTrades = trades.filter(t => t.status === 'CLOSED').sort((a,b) => new Date(a.updated_at) - new Date(b.updated_at));
+            const wins = closedTrades.filter(t => t.outcome === 'WIN' && t.learnings);
+            const losses = closedTrades.filter(t => t.outcome === 'LOSS' && t.learnings);
+            
+            // Calculate cumulative P&L for timeline
+            let cumulative = 0;
+            const timelineData = closedTrades.map(t => {
+                cumulative += t.return_amount || 0;
+                return { date: t.updated_at, value: cumulative, outcome: t.outcome };
+            });
+            
+            document.getElementById('mainContent').innerHTML = `
+                <div class="space-y-6">
+                    <div>
+                        <h1 class="text-3xl font-bold">Trading Journal</h1>
+                        <p class="text-gray-500">Learnings from your trades</p>
+                    </div>
+                    
+                    <!-- Timeline Chart -->
+                    <div class="bg-white rounded-xl p-4 shadow-sm">
+                        <h3 class="text-sm font-medium text-gray-500 mb-3">P&L Timeline</h3>
+                        <canvas id="journalChart" height="80"></canvas>
+                    </div>
+                    
+                    <!-- Stats Row -->
+                    <div class="grid grid-cols-4 gap-4">
+                        <div class="bg-white rounded-xl p-4 shadow-sm text-center">
+                            <p class="text-2xl font-bold text-green-500">${wins.length}</p>
+                            <p class="text-xs text-gray-500">Winning Trades</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm text-center">
+                            <p class="text-2xl font-bold text-red-500">${losses.length}</p>
+                            <p class="text-xs text-gray-500">Losing Trades</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm text-center">
+                            <p class="text-2xl font-bold">${closedTrades.length > 0 ? ((wins.length / closedTrades.filter(t=>t.learnings).length) * 100).toFixed(0) : 0}%</p>
+                            <p class="text-xs text-gray-500">Win Rate</p>
+                        </div>
+                        <div class="bg-white rounded-xl p-4 shadow-sm text-center">
+                            <p class="text-2xl font-bold ${cumulative >= 0 ? 'text-green-500' : 'text-red-500'}">${formatCompact(cumulative)}</p>
+                            <p class="text-xs text-gray-500">Total P&L</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Side by Side Wins and Losses -->
+                    <div class="grid grid-cols-2 gap-6">
+                        <!-- Wins Column -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-green-500 mb-3 flex items-center gap-2">
+                                <i class="fas fa-trophy"></i> Winning Trades
+                            </h3>
+                            <div class="space-y-3" style="max-height: 500px; overflow-y: auto;">
+                                ${wins.length === 0 ? '<div class="bg-white rounded-xl p-6 text-center text-gray-500">No winning trades with learnings yet</div>' : wins.sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at)).map(t => `
+                                    <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-green-500">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="font-semibold">#${t.trade_number} ${t.symbol}</span>
+                                            <span class="text-green-500 font-medium">${formatCurrency(t.return_amount)}</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-2">${t.learnings}</p>
+                                        <span class="text-xs text-gray-400">${formatDate(t.updated_at)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        
+                        <!-- Losses Column -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-red-500 mb-3 flex items-center gap-2">
+                                <i class="fas fa-exclamation-triangle"></i> Losing Trades
+                            </h3>
+                            <div class="space-y-3" style="max-height: 500px; overflow-y: auto;">
+                                ${losses.length === 0 ? '<div class="bg-white rounded-xl p-6 text-center text-gray-500">No losing trades with learnings yet</div>' : losses.sort((a,b) => new Date(b.updated_at) - new Date(a.updated_at)).map(t => `
+                                    <div class="bg-white rounded-xl p-4 shadow-sm border-l-4 border-red-500">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="font-semibold">#${t.trade_number} ${t.symbol}</span>
+                                            <span class="text-red-500 font-medium">${formatCurrency(t.return_amount)}</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-2">${t.learnings}</p>
+                                        <span class="text-xs text-gray-400">${formatDate(t.updated_at)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Render timeline chart
+            if (timelineData.length > 0) {
+                const ctx = document.getElementById('journalChart').getContext('2d');
+                if (journalChartInstance) journalChartInstance.destroy();
+                
+                journalChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: timelineData.map((d, i) => i + 1),
+                        datasets: [{
+                            data: timelineData.map(d => d.value),
+                            borderColor: timelineData[timelineData.length - 1]?.value >= 0 ? '#00d47e' : '#ff4d6a',
+                            backgroundColor: timelineData[timelineData.length - 1]?.value >= 0 ? 'rgba(0, 212, 126, 0.1)' : 'rgba(255, 77, 106, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 3,
+                            pointBackgroundColor: timelineData.map(d => d.outcome === 'WIN' ? '#00d47e' : '#ff4d6a'),
+                            pointBorderColor: timelineData.map(d => d.outcome === 'WIN' ? '#00d47e' : '#ff4d6a'),
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: (ctx) => 'P&L: ' + formatCurrency(ctx.raw)
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: { display: true, text: 'Trade #', color: 'rgba(255,255,255,0.5)' },
+                                grid: { color: 'rgba(255,255,255,0.05)' },
+                                ticks: { color: 'rgba(255,255,255,0.5)' }
+                            },
+                            y: {
+                                title: { display: true, text: 'Cumulative P&L', color: 'rgba(255,255,255,0.5)' },
+                                grid: { color: 'rgba(255,255,255,0.05)' },
+                                ticks: { 
+                                    color: 'rgba(255,255,255,0.5)',
+                                    callback: (v) => formatCompact(v) 
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // ==================== ANALYTICS ====================
+        async function renderAnalytics() {
+            const trades = await api('/api/trades');
+            const closed = trades.filter(t => t.status === 'CLOSED');
+            const wins = closed.filter(t => t.outcome === 'WIN');
+            const losses = closed.filter(t => t.outcome === 'LOSS');
+            const avgWin = wins.length > 0 ? wins.reduce((s, t) => s + t.return_amount, 0) / wins.length : 0;
+            const avgLoss = losses.length > 0 ? Math.abs(losses.reduce((s, t) => s + t.return_amount, 0) / losses.length) : 0;
+            const riskReward = avgLoss > 0 ? (avgWin / avgLoss).toFixed(2) : '-';
+            const profitFactor = avgLoss > 0 ? (wins.reduce((s,t) => s + (t.return_amount || 0), 0) / Math.abs(losses.reduce((s,t) => s + (t.return_amount || 0), 0))).toFixed(2) : '-';
+            const bySymbol = {};
+            closed.forEach(t => { if (!bySymbol[t.symbol]) bySymbol[t.symbol] = { wins: 0, losses: 0, pl: 0 }; if (t.outcome === 'WIN') bySymbol[t.symbol].wins++; else bySymbol[t.symbol].losses++; bySymbol[t.symbol].pl += t.return_amount || 0; });
+            const byMonth = {};
+            closed.forEach(t => { const m = getMonthYear(t.updated_at); if (!byMonth[m]) byMonth[m] = { trades: 0, pl: 0, wins: 0 }; byMonth[m].trades++; byMonth[m].pl += t.return_amount || 0; if (t.outcome === 'WIN') byMonth[m].wins++; });
+            const byDay = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0 };
+            const byDayCount = { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0 };
+            closed.forEach(t => { const d = new Date(t.updated_at).toLocaleDateString('en-US', { weekday: 'short' }); if (byDay[d] !== undefined) { byDay[d] += t.return_amount || 0; byDayCount[d]++; } });
+            document.getElementById('mainContent').innerHTML = `<div class="space-y-4"><h1 class="text-3xl font-bold">Analytics</h1><div class="grid grid-cols-2 md:grid-cols-5 gap-3"><div class="bg-white rounded-xl p-3 shadow-sm"><p class="text-gray-500 text-xs">Win Rate</p><p class="text-xl font-bold">${closed.length > 0 ? ((wins.length/closed.length)*100).toFixed(1) : 0}%</p></div><div class="bg-white rounded-xl p-3 shadow-sm"><p class="text-gray-500 text-xs">Avg Win</p><p class="text-xl font-bold text-green-600">${formatCurrency(avgWin)}</p></div><div class="bg-white rounded-xl p-3 shadow-sm"><p class="text-gray-500 text-xs">Avg Loss</p><p class="text-xl font-bold text-red-600">${formatCurrency(avgLoss)}</p></div><div class="bg-white rounded-xl p-3 shadow-sm"><p class="text-gray-500 text-xs">Risk:Reward</p><p class="text-xl font-bold">1:${riskReward}</p></div><div class="bg-white rounded-xl p-3 shadow-sm"><p class="text-gray-500 text-xs">Profit Factor</p><p class="text-xl font-bold text-blue-600">${profitFactor}</p></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-4"><div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2">Win/Loss</h3><div style="height:150px"><canvas id="winLossChart"></canvas></div></div><div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2">By Day of Week</h3><div style="height:150px"><canvas id="dayChart"></canvas></div></div><div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2">By Symbol</h3><div class="space-y-1 max-h-[150px] overflow-auto">${Object.entries(bySymbol).length === 0 ? '<p class="text-gray-400 text-sm">No data</p>' : Object.entries(bySymbol).sort((a,b) => b[1].pl - a[1].pl).slice(0,5).map(([sym, data]) => `<div class="flex items-center justify-between p-1.5 bg-gray-50 rounded text-sm"><span class="font-medium">${sym}</span><span class="font-bold ${data.pl >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(data.pl)}</span></div>`).join('')}</div></div></div><div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2">Monthly Performance</h3><div style="height:180px"><canvas id="monthlyChart"></canvas></div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2">Monthly Stats</h3><div class="space-y-1 max-h-[200px] overflow-auto">${Object.entries(byMonth).length === 0 ? '<p class="text-gray-400 text-sm">No data</p>' : Object.entries(byMonth).map(([m, d]) => `<div class="flex items-center justify-between p-2 bg-gray-50 rounded text-sm"><div><span class="font-medium">${m}</span><span class="text-xs text-gray-500 ml-2">${d.trades} trades • ${d.trades > 0 ? ((d.wins/d.trades)*100).toFixed(0) : 0}% WR</span></div><span class="font-bold ${d.pl >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(d.pl)}</span></div>`).join('')}</div></div><div class="bg-white rounded-xl p-4 shadow-sm"><h3 class="font-semibold text-sm mb-2">All Symbols Performance</h3><div class="space-y-1 max-h-[200px] overflow-auto">${Object.entries(bySymbol).length === 0 ? '<p class="text-gray-400 text-sm">No data</p>' : Object.entries(bySymbol).sort((a,b) => b[1].pl - a[1].pl).map(([sym, d]) => `<div class="flex items-center justify-between p-2 bg-gray-50 rounded text-sm"><div><span class="font-medium">${sym}</span><span class="text-xs text-gray-500 ml-2">${d.wins}W/${d.losses}L</span></div><span class="font-bold ${d.pl >= 0 ? 'text-green-600' : 'text-red-600'}">${formatCurrency(d.pl)}</span></div>`).join('')}</div></div></div></div>`;
+            new Chart(document.getElementById('winLossChart'), { type: 'doughnut', data: { labels: ['Wins', 'Losses'], datasets: [{ data: [wins.length, losses.length], backgroundColor: ['#22c55e', '#ef4444'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } } } });
+            new Chart(document.getElementById('dayChart'), { type: 'bar', data: { labels: Object.keys(byDay), datasets: [{ data: Object.values(byDay), backgroundColor: Object.values(byDay).map(v => v >= 0 ? '#22c55e' : '#ef4444') }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => formatCompact(v), font: { size: 9 } } }, x: { ticks: { font: { size: 9 } } } } } });
+            const months = Object.keys(byMonth);
+            new Chart(document.getElementById('monthlyChart'), { type: 'bar', data: { labels: months, datasets: [{ label: 'P/L', data: months.map(m => byMonth[m].pl), backgroundColor: months.map(m => byMonth[m].pl >= 0 ? '#22c55e' : '#ef4444') }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => formatCompact(v), font: { size: 10 } } }, x: { ticks: { font: { size: 10 } } } } } });
+        }
+
+        // ==================== SETTINGS ====================
+        async function renderSettings() {
+            const [settings, me] = await Promise.all([api('/api/settings'), api('/api/auth/me')]);
+            document.getElementById('mainContent').innerHTML = `<div class="space-y-6 max-w-3xl"><h1 class="text-3xl font-bold">Settings</h1><div class="bg-white rounded-xl p-6 shadow-sm"><h3 class="font-semibold mb-4"><i class="fas fa-user mr-2"></i>Account</h3><div class="grid grid-cols-2 gap-4"><div><label class="block text-sm text-gray-500">Username</label><p class="font-medium">${me.username}</p></div><div><label class="block text-sm text-gray-500">MFA Status</label><p class="font-medium">${me.mfa_enabled ? '<span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Enabled</span>' : '<span class="text-yellow-600"><i class="fas fa-exclamation-circle mr-1"></i>Disabled</span>'}</p></div></div><div class="mt-4 pt-4 border-t flex gap-2"><button onclick="showChangePasswordModal()" class="px-4 py-2 bg-gray-200 rounded-lg">Change Password</button>${me.mfa_enabled ? '<button onclick="showDisableMFAModal()" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg">Disable MFA</button>' : '<button onclick="setupMFA()" class="px-4 py-2 bg-green-600 text-white rounded-lg">Setup MFA</button>'}</div></div><div class="bg-white rounded-xl p-6 shadow-sm"><h3 class="font-semibold mb-4"><i class="fas fa-crosshairs mr-2"></i>Trading Plan</h3><form id="settingsForm" class="space-y-4"><div class="grid grid-cols-2 gap-4"><div><label class="block text-sm font-medium mb-1">Initial Capital</label><input type="number" id="setInitial" value="${settings.initial_capital}" class="w-full px-3 py-2 border rounded-lg"></div><div><label class="block text-sm font-medium mb-1">Target Capital</label><input type="number" id="setTarget" value="${settings.target_capital}" class="w-full px-3 py-2 border rounded-lg"></div></div><div class="grid grid-cols-2 gap-4"><div><label class="block text-sm font-medium mb-1">Return/Trade (%)</label><input type="number" step="0.5" id="setReturn" value="${settings.return_per_trade}" class="w-full px-3 py-2 border rounded-lg"></div><div><label class="block text-sm font-medium mb-1">Reserve Amount</label><input type="number" id="setReserve" value="${settings.reserve_amount}" class="w-full px-3 py-2 border rounded-lg"></div></div><button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg"><i class="fas fa-save mr-2"></i>Save</button></form></div><div class="bg-blue-50 rounded-xl p-6"><h3 class="font-semibold mb-4"><i class="fas fa-layer-group mr-2"></i>NSE Lot Sizes</h3><form id="lotSizesForm" class="space-y-4"><div class="grid grid-cols-3 gap-4"><div><label class="block text-sm font-medium mb-1">Nifty</label><input type="number" id="lotNifty" value="${settings.nifty_lot_size || 65}" class="w-full px-3 py-2 border rounded-lg"></div><div><label class="block text-sm font-medium mb-1">Bank Nifty</label><input type="number" id="lotBankNifty" value="${settings.banknifty_lot_size || 30}" class="w-full px-3 py-2 border rounded-lg"></div><div><label class="block text-sm font-medium mb-1">Fin Nifty</label><input type="number" id="lotFinNifty" value="${settings.finnifty_lot_size || 60}" class="w-full px-3 py-2 border rounded-lg"></div></div><button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg"><i class="fas fa-save mr-2"></i>Save Lot Sizes</button></form></div><div class="bg-orange-50 rounded-xl p-6"><h3 class="font-semibold mb-4"><i class="fas fa-calendar-week mr-2"></i>Expiry Settings</h3><form id="expiryForm" class="space-y-4"><div><label class="block text-sm font-medium mb-1">Weekly Expiry Day</label><select id="expiryDay" class="w-full px-3 py-2 border rounded-lg"><option value="MONDAY" ${settings.nifty_expiry_day === 'MONDAY' ? 'selected' : ''}>Monday</option><option value="TUESDAY" ${settings.nifty_expiry_day === 'TUESDAY' ? 'selected' : ''}>Tuesday</option><option value="WEDNESDAY" ${settings.nifty_expiry_day === 'WEDNESDAY' ? 'selected' : ''}>Wednesday</option><option value="THURSDAY" ${settings.nifty_expiry_day === 'THURSDAY' ? 'selected' : ''}>Thursday</option><option value="FRIDAY" ${settings.nifty_expiry_day === 'FRIDAY' ? 'selected' : ''}>Friday</option></select><p class="text-xs text-gray-500 mt-1">Nifty weekly expiry day (currently Tuesday). Monthly expiry is always on the last week's expiry day.</p></div><button type="submit" class="px-6 py-2 bg-orange-600 text-white rounded-lg"><i class="fas fa-save mr-2"></i>Save Expiry Settings</button></form></div><div class="bg-white rounded-xl p-6 shadow-sm"><h3 class="font-semibold mb-4"><i class="fas fa-download mr-2"></i>Export</h3><button onclick="exportTrades()" class="px-4 py-2 bg-green-600 text-white rounded-lg"><i class="fas fa-file-csv mr-2"></i>Export Trades CSV</button></div></div>`;
+            document.getElementById('settingsForm').addEventListener('submit', async (e) => { e.preventDefault(); await api('/api/settings', { method: 'PATCH', body: JSON.stringify({ initial_capital: parseFloat(document.getElementById('setInitial').value), target_capital: parseFloat(document.getElementById('setTarget').value), return_per_trade: parseFloat(document.getElementById('setReturn').value), reserve_amount: parseFloat(document.getElementById('setReserve').value) }) }); alert('Settings saved!'); });
+            document.getElementById('lotSizesForm').addEventListener('submit', async (e) => { e.preventDefault(); await api('/api/settings', { method: 'PATCH', body: JSON.stringify({ nifty_lot_size: parseInt(document.getElementById('lotNifty').value), banknifty_lot_size: parseInt(document.getElementById('lotBankNifty').value), finnifty_lot_size: parseInt(document.getElementById('lotFinNifty').value) }) }); LOT_SIZES['NIFTY_OPTION'].lotSize = parseInt(document.getElementById('lotNifty').value); LOT_SIZES['BANKNIFTY_OPTION'].lotSize = parseInt(document.getElementById('lotBankNifty').value); LOT_SIZES['FINNIFTY_OPTION'].lotSize = parseInt(document.getElementById('lotFinNifty').value); alert('Lot sizes saved!'); });
+            document.getElementById('expiryForm').addEventListener('submit', async (e) => { e.preventDefault(); await api('/api/settings', { method: 'PATCH', body: JSON.stringify({ nifty_expiry_day: document.getElementById('expiryDay').value }) }); alert('Expiry settings saved!'); checkExpiryBanner(); });
+        }
+
+        async function exportTrades() { const trades = await api('/api/trades'); const csv = ['Trade#,Symbol,Type,Status,Outcome,AvgPrice,ExitPrice,Return%,ReturnAmt,Date'].concat(trades.map(t => `${t.trade_number},${t.symbol},${t.instrument_type},${t.status},${t.outcome || ''},${t.avg_price},${t.exit_price || ''},${t.return_percent || ''},${t.return_amount || ''},${t.updated_at}`)).join('\n'); const blob = new Blob([csv], { type: 'text/csv' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'trades_export.csv'; a.click(); }
+
+        function showChangePasswordModal() {
+            showModal(`<div class="p-6"><h2 class="text-xl font-bold mb-4">Change Password</h2><form id="pwdForm" class="space-y-4"><div><label class="block text-sm font-medium mb-1">Current Password</label><input type="password" id="pwdCurrent" required class="w-full px-3 py-2 border rounded-lg"></div><div><label class="block text-sm font-medium mb-1">New Password</label><input type="password" id="pwdNew" required class="w-full px-3 py-2 border rounded-lg"></div><div id="pwdError" class="hidden text-red-600 text-sm"></div><div class="flex gap-2"><button type="button" onclick="hideModal()" class="flex-1 px-4 py-2 bg-gray-200 rounded-lg">Cancel</button><button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">Change</button></div></form></div>`);
+            document.getElementById('pwdForm').addEventListener('submit', async (e) => { e.preventDefault(); try { const res = await fetch('/api/auth/change-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ current_password: document.getElementById('pwdCurrent').value, new_password: document.getElementById('pwdNew').value }) }); const data = await res.json(); if (!res.ok) throw new Error(data.detail); alert('Password changed!'); hideModal(); } catch (err) { document.getElementById('pwdError').textContent = err.message; document.getElementById('pwdError').classList.remove('hidden'); } });
+        }
+
+        async function setupMFA() {
+            const data = await api('/api/auth/setup-mfa', { method: 'POST' });
+            showModal(`<div class="p-6"><h2 class="text-xl font-bold mb-4">Setup MFA</h2><div class="text-center mb-4"><img src="data:image/png;base64,${data.qr_code}" alt="QR" class="mx-auto w-40 h-40"><p class="text-xs text-gray-400 mt-2">Secret: ${data.secret}</p></div><form id="mfaVerifyForm" class="space-y-4"><input type="text" id="mfaCode" maxlength="6" required class="w-full px-3 py-2 border rounded-lg text-center text-2xl tracking-widest" placeholder="000000"><div id="mfaError" class="hidden text-red-600 text-sm"></div><div class="flex gap-2"><button type="button" onclick="hideModal()" class="flex-1 px-4 py-2 bg-gray-200 rounded-lg">Cancel</button><button type="submit" class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg">Verify</button></div></form></div>`);
+            document.getElementById('mfaVerifyForm').addEventListener('submit', async (e) => { e.preventDefault(); try { const res = await fetch('/api/auth/verify-mfa', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: document.getElementById('mfaCode').value }) }); const data = await res.json(); if (!res.ok) throw new Error(data.detail); alert('MFA enabled!'); hideModal(); renderSettings(); } catch (err) { document.getElementById('mfaError').textContent = err.message; document.getElementById('mfaError').classList.remove('hidden'); } });
+        }
+
+        function showDisableMFAModal() {
+            showModal(`<div class="p-6"><h2 class="text-xl font-bold mb-4 text-red-600">Disable MFA</h2><form id="disableMFAForm" class="space-y-4"><input type="text" id="disableMfaCode" maxlength="6" required class="w-full px-3 py-2 border rounded-lg text-center text-2xl tracking-widest" placeholder="000000"><div id="disableMfaError" class="hidden text-red-600 text-sm"></div><div class="flex gap-2"><button type="button" onclick="hideModal()" class="flex-1 px-4 py-2 bg-gray-200 rounded-lg">Cancel</button><button type="submit" class="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg">Disable</button></div></form></div>`);
+            document.getElementById('disableMFAForm').addEventListener('submit', async (e) => { e.preventDefault(); try { const res = await fetch('/api/auth/disable-mfa', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code: document.getElementById('disableMfaCode').value }) }); const data = await res.json(); if (!res.ok) throw new Error(data.detail); alert('MFA disabled!'); hideModal(); renderSettings(); } catch (err) { document.getElementById('disableMfaError').textContent = err.message; document.getElementById('disableMfaError').classList.remove('hidden'); } });
+        }
+
+        async function checkExpiryBanner() {
+            try {
+                const settings = await api('/api/settings');
+                const expiryDay = settings.nifty_expiry_day || 'TUESDAY';
+                const dayMap = { 'SUNDAY': 0, 'MONDAY': 1, 'TUESDAY': 2, 'WEDNESDAY': 3, 'THURSDAY': 4, 'FRIDAY': 5, 'SATURDAY': 6 };
+                const expiryDayNum = dayMap[expiryDay];
+                
+                const today = new Date();
+                const todayDay = today.getDay();
+                const banner = document.getElementById('expiryBanner');
+                
+                if (todayDay === expiryDayNum) {
+                    // Check if it's the last occurrence of this day in the month (monthly expiry)
+                    const nextWeek = new Date(today);
+                    nextWeek.setDate(today.getDate() + 7);
+                    const isLastWeek = nextWeek.getMonth() !== today.getMonth();
+                    
+                    if (isLastWeek) {
+                        // Monthly expiry - show only monthly banner
+                        banner.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>MONTHLY EXPIRY DAY - Nifty, Bank Nifty & Fin Nifty Monthly Expiry Today!';
+                        banner.className = 'fixed top-0 left-0 right-0 z-50 text-center py-3 font-bold text-white bg-gradient-to-r from-red-600 via-orange-500 to-red-600';
+                        banner.style.animation = 'pulse 2s infinite';
+                        document.getElementById('appContainer').style.marginTop = '48px';
+                    } else {
+                        // Weekly expiry
+                        banner.innerHTML = '<i class="fas fa-clock mr-2"></i>WEEKLY EXPIRY DAY - Nifty Weekly Options Expiry Today!';
+                        banner.className = 'fixed top-0 left-0 right-0 z-50 text-center py-2 font-semibold text-white bg-gradient-to-r from-yellow-500 via-orange-500 to-yellow-500';
+                        document.getElementById('appContainer').style.marginTop = '40px';
+                    }
+                    banner.classList.remove('hidden');
+                } else {
+                    banner.classList.add('hidden');
+                    document.getElementById('appContainer').style.marginTop = '0';
+                }
+            } catch (e) {
+                console.log('Could not check expiry banner');
+            }
+        }
+
+        async function init() { initTheme(); await loadLotSizes(); await checkExpiryBanner(); const hash = window.location.hash.slice(1) || 'dashboard'; navigate(hash); }
+        init();
+    </script>
+</body>
+</html>

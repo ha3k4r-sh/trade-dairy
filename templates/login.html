@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Diary - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0a0f;
+            --bg-secondary: #12121a;
+            --card-bg: rgba(18, 18, 26, 0.95);
+            --ticker-bg: rgba(10, 10, 15, 0.9);
+            --text: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --border: rgba(255, 255, 255, 0.08);
+            --input-bg: rgba(255, 255, 255, 0.04);
+            --input-border: rgba(255, 255, 255, 0.1);
+            --green: #00d47e;
+            --green-dim: #00b368;
+            --green-bg: rgba(0, 212, 126, 0.12);
+            --green-glow: rgba(0, 212, 126, 0.3);
+            --red: #ff4d6a;
+            --red-bg: rgba(255, 77, 106, 0.12);
+            --blue: #3d8bfd;
+            --purple: #a78bfa;
+        }
+
+        .light-mode {
+            --bg: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --ticker-bg: rgba(255, 255, 255, 0.95);
+            --text: #0f172a;
+            --text-secondary: rgba(15, 23, 42, 0.7);
+            --text-muted: rgba(15, 23, 42, 0.5);
+            --border: rgba(0, 0, 0, 0.08);
+            --input-bg: rgba(0, 0, 0, 0.03);
+            --input-border: rgba(0, 0, 0, 0.12);
+            --green: #059669;
+            --green-dim: #047857;
+            --green-bg: rgba(5, 150, 105, 0.1);
+            --green-glow: rgba(5, 150, 105, 0.2);
+            --red: #dc2626;
+            --red-bg: rgba(220, 38, 38, 0.1);
+            --blue: #2563eb;
+            --purple: #7c3aed;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Ticker Bar */
+        .ticker-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: var(--ticker-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            z-index: 100;
+        }
+
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ticker-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 500;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        .ticker-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .ticker-points {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .ticker-points.up { color: var(--green); }
+        .ticker-points.down { color: var(--red); }
+
+        .ticker-change {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 5px;
+        }
+
+        .ticker-change.up { color: var(--green); background: var(--green-bg); }
+        .ticker-change.down { color: var(--red); background: var(--red-bg); }
+
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .pulse-dot.up { background: var(--green); box-shadow: 0 0 10px var(--green); }
+        .pulse-dot.down { background: var(--red); box-shadow: 0 0 10px var(--red); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 70px;
+            right: 24px;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.05);
+            border-color: var(--green);
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--text-secondary);
+        }
+
+        /* Main Layout - Animation Left, Login Centered */
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+            padding-top: 56px;
+        }
+
+        /* Left Panel - Hero Section (Smaller) */
+        .hero-panel {
+            width: 42%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 30px;
+            position: relative;
+            background: linear-gradient(135deg, var(--bg) 0%, var(--bg-secondary) 100%);
+        }
+
+        .hero-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 30% 70%, var(--green-glow) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 30%, rgba(61, 139, 253, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Animated Quote */
+        .quote-section {
+            text-align: center;
+            margin-bottom: 48px;
+            z-index: 10;
+        }
+
+        .quote-line {
+            font-size: 36px;
+            font-weight: 700;
+            line-height: 1.4;
+            letter-spacing: -1px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.6s ease-out forwards;
+        }
+
+        .quote-line:nth-child(1) { animation-delay: 0.1s; }
+        .quote-line:nth-child(2) { animation-delay: 0.3s; }
+        .quote-line:nth-child(3) { animation-delay: 0.5s; }
+
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quote-line .highlight {
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-dim) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .quote-line:nth-child(2) .highlight {
+            background: linear-gradient(135deg, var(--blue) 0%, #60a5fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .quote-line:nth-child(3) .highlight {
+            background: linear-gradient(135deg, var(--purple) 0%, #c4b5fd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            width: 100%;
+            max-width: 600px;
+            z-index: 10;
+        }
+
+        .chart-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        #candleChart { overflow: visible; }
+        #volumeChart { overflow: visible; margin-top: 16px; }
+
+        @keyframes candleAppear {
+            from { opacity: 0; transform: translateX(15px) scaleY(0.6); }
+            to { opacity: 1; transform: translateX(0) scaleY(1); }
+        }
+
+        @keyframes volumeAppear {
+            from { opacity: 0; transform: scaleY(0); transform-origin: bottom; }
+            to { opacity: 1; transform: scaleY(1); }
+        }
+
+        /* Right Panel - Login (Larger, More Centered) */
+        .login-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 80px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border);
+            position: relative;
+        }
+
+        .login-panel::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            bottom: 20%;
+            width: 2px;
+            background: linear-gradient(180deg, transparent, var(--green), transparent);
+            opacity: 0.5;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        /* Logo */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo-icon {
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-dim) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px var(--green-glow);
+        }
+
+        .logo-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: #0a0a0f;
+        }
+
+        .light-mode .logo-icon svg { fill: #ffffff; }
+
+        .app-title {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .app-tagline {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .app-tagline span {
+            color: var(--green);
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-input:focus {
+            border-color: var(--green);
+            background: var(--green-bg);
+            box-shadow: 0 0 0 3px var(--green-bg);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px 24px;
+            margin-top: 28px;
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-dim) 100%);
+            border: none;
+            border-radius: 12px;
+            color: #0a0a0f;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .light-mode .submit-btn { color: #ffffff; }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px var(--green-glow);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .error-box {
+            background: var(--red-bg);
+            border: 1px solid rgba(255, 77, 106, 0.3);
+            color: var(--red);
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .mfa-section {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .mfa-input {
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            letter-spacing: 8px;
+            padding: 16px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .footer-text a {
+            color: var(--green);
+            text-decoration: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .footer-text a:hover { opacity: 1; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-panel { display: none; }
+            .login-panel {
+                width: 100%;
+                border-left: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Ticker Bar -->
+    <div class="ticker-bar">
+        <div class="ticker-item">
+            <span class="ticker-name">SENSEX</span>
+            <span class="ticker-value" id="sensexValue">81,234.50</span>
+            <span class="ticker-points up" id="sensexPoints">+320.45</span>
+            <span class="ticker-change up" id="sensexChange">+0.40%</span>
+            <div class="pulse-dot up" id="sensexDot"></div>
+        </div>
+        <div class="ticker-item">
+            <span class="ticker-name">NIFTY 50</span>
+            <span class="ticker-value" id="niftyValue">24,856.50</span>
+            <span class="ticker-points up" id="niftyPoints">+115.30</span>
+            <span class="ticker-change up" id="niftyChange">+0.47%</span>
+            <div class="pulse-dot up" id="niftyDot"></div>
+        </div>
+        <div class="ticker-item">
+            <span class="ticker-name">BANKNIFTY</span>
+            <span class="ticker-value" id="bnValue">52,340.25</span>
+            <span class="ticker-points up" id="bnPoints">+285.60</span>
+            <span class="ticker-change up" id="bnChange">+0.55%</span>
+            <div class="pulse-dot up" id="bnDot"></div>
+        </div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">
+        <svg viewBox="0 0 24 24" id="themeIcon">
+            <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+        </svg>
+    </button>
+
+    <div class="main-container">
+        <!-- Left Panel - Hero -->
+        <div class="hero-panel">
+            <!-- Animated Quote -->
+            <div class="quote-section">
+                <div class="quote-line"><span class="highlight">Options</span> make you smart</div>
+                <div class="quote-line"><span class="highlight">Equity</span> makes you rich</div>
+                <div class="quote-line"><span class="highlight">Patience</span> keeps you alive</div>
+            </div>
+
+            <!-- Chart -->
+            <div class="chart-container">
+                <div class="chart-inner">
+                    <svg id="candleChart" height="320"></svg>
+                    <svg id="volumeChart" height="70"></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - Login -->
+        <div class="login-panel">
+            <div class="login-card">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M3 13h2v8H3v-8zm4-6h2v14H7V7zm4 3h2v11h-2V10zm4-6h2v17h-2V4zm4 4h2v13h-2V8z"/>
+                        </svg>
+                    </div>
+                    <h1 class="app-title">Trade Diary</h1>
+                    <p class="app-tagline">Your journey to <span>₹1 Crore</span></p>
+                </div>
+
+                <div class="error-box" id="errorBox"></div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-input" id="username" placeholder="Enter username" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" id="password" placeholder="Enter password" required>
+                    </div>
+                    <div class="mfa-section" id="mfaSection">
+                        <div class="form-group">
+                            <label class="form-label">Authentication Code</label>
+                            <input type="text" class="form-input mfa-input" id="mfaCode" placeholder="000000" maxlength="6">
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn" id="submitBtn">Sign In</button>
+                </form>
+
+                <footer class="footer">
+                    <p class="footer-text">Built by <a href="mailto:ha3k4r.sh@gmail.com">ha3k4r.sh@gmail.com</a></p>
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme
+        const sunIcon = `<path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>`;
+        const moonIcon = `<path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>`;
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            document.getElementById('themeIcon').innerHTML = isLight ? moonIcon : sunIcon;
+            localStorage.setItem('appTheme', isLight ? 'light' : 'dark');
+        }
+
+        if (localStorage.getItem('appTheme') === 'light') {
+            document.body.classList.add('light-mode');
+            document.getElementById('themeIcon').innerHTML = moonIcon;
+        }
+
+        // Candle Chart
+        const candleChart = document.getElementById('candleChart');
+        const volumeChart = document.getElementById('volumeChart');
+        const chartHeight = 320;
+        const volumeHeight = 70;
+        const candleWidth = 12;
+        const candleGap = 4;
+        const maxCandles = 40;
+
+        let candles = [];
+        let candleId = 0;
+        let basePrice = 100;
+
+        function getColors() {
+            const isLight = document.body.classList.contains('light-mode');
+            return {
+                green: isLight ? '#059669' : '#00d47e',
+                red: isLight ? '#dc2626' : '#ff4d6a',
+                greenGlow: isLight ? 'rgba(5, 150, 105, 0.3)' : 'rgba(0, 212, 126, 0.4)',
+                redGlow: isLight ? 'rgba(220, 38, 38, 0.3)' : 'rgba(255, 77, 106, 0.4)',
+                volOpacity: isLight ? 0.35 : 0.45
+            };
+        }
+
+        function generateCandle() {
+            const trend = Math.random() > 0.3 ? 1 : -1;
+            const movement = (Math.random() * 5 + 1.5) * trend;
+            basePrice += 1.2 + Math.random() * 0.4;
+
+            const open = basePrice + (Math.random() - 0.5) * 6;
+            const close = open + movement;
+            const high = Math.max(open, close) + Math.random() * 3;
+            const low = Math.min(open, close) - Math.random() * 3;
+            const isGreen = close > open;
+            const volume = 20 + Math.random() * 45 + (isGreen ? 12 : 0);
+
+            return { id: candleId++, open, close, high, low, isGreen, volume, basePrice };
+        }
+
+        function renderCandles() {
+            if (candles.length === 0) return;
+
+            const colors = getColors();
+            const prices = candles.flatMap(c => [c.high, c.low]);
+            const minPrice = Math.min(...prices) - 12;
+            const maxPrice = Math.max(...prices) + 12;
+            const priceRange = maxPrice - minPrice || 1;
+
+            const scaleY = (price) => chartHeight - ((price - minPrice) / priceRange) * chartHeight;
+            const chartWidth = candles.length * (candleWidth + candleGap) + 40;
+
+            candleChart.setAttribute('width', chartWidth);
+            candleChart.innerHTML = candles.map((candle, index) => {
+                const x = index * (candleWidth + candleGap);
+                const bodyTop = scaleY(Math.max(candle.open, candle.close));
+                const bodyBottom = scaleY(Math.min(candle.open, candle.close));
+                const bodyHeight = Math.max(2, bodyBottom - bodyTop);
+                const wickTop = scaleY(candle.high);
+                const wickBottom = scaleY(candle.low);
+                const isNewest = index === candles.length - 1;
+                const color = candle.isGreen ? colors.green : colors.red;
+                const glow = candle.isGreen ? colors.greenGlow : colors.redGlow;
+
+                return `
+                    <g style="animation: ${isNewest ? 'candleAppear 0.2s ease-out forwards' : 'none'}; opacity: ${isNewest ? 0 : 1}">
+                        <line x1="${x + candleWidth / 2}" y1="${wickTop}" x2="${x + candleWidth / 2}" y2="${wickBottom}" stroke="${color}" stroke-width="1.5"/>
+                        <rect x="${x}" y="${bodyTop}" width="${candleWidth}" height="${bodyHeight}" fill="${color}" rx="2" style="filter: drop-shadow(0 0 ${isNewest ? 8 : 3}px ${glow})"/>
+                    </g>
+                `;
+            }).join('');
+
+            // Volume
+            const maxVolume = Math.max(...candles.map(c => c.volume));
+            volumeChart.setAttribute('width', chartWidth);
+            volumeChart.innerHTML = candles.map((candle, index) => {
+                const x = index * (candleWidth + candleGap);
+                const barHeight = (candle.volume / maxVolume) * volumeHeight;
+                const isNewest = index === candles.length - 1;
+                const color = candle.isGreen ? colors.green : colors.red;
+
+                return `
+                    <rect x="${x}" y="${volumeHeight - barHeight}" width="${candleWidth}" height="${barHeight}" fill="${color}" fill-opacity="${colors.volOpacity}" rx="2" style="animation: ${isNewest ? 'volumeAppear 0.2s ease-out forwards' : 'none'}; opacity: ${isNewest ? 0 : 1}"/>
+                `;
+            }).join('');
+        }
+
+        function initCandles() {
+            basePrice = 100;
+            candleId = 0;
+            candles = [];
+            for (let i = 0; i < 22; i++) {
+                candles.push(generateCandle());
+            }
+            renderCandles();
+        }
+
+        function addCandle() {
+            const newCandle = generateCandle();
+            candles.push(newCandle);
+
+            // Smooth continuous scroll - remove oldest candle when we have too many
+            if (candles.length > maxCandles) {
+                candles.shift(); // Remove first (oldest) candle
+            }
+            
+            // Gradually reset basePrice to prevent it from going too high
+            // This creates a smooth wave pattern instead of jarring reset
+            if (basePrice > 200) {
+                basePrice = basePrice * 0.995; // Slowly bring it back down
+            }
+            if (basePrice < 80) {
+                basePrice = basePrice * 1.005; // Slowly bring it back up
+            }
+            
+            renderCandles();
+        }
+
+        initCandles();
+        setInterval(addCandle, 350);
+
+        // Fetch index data
+        async function fetchIndexData() {
+            try {
+                const response = await fetch('/api/market/indices');
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Sensex
+                    if (data.sensex) {
+                        document.getElementById('sensexValue').textContent = data.sensex.price.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+                        document.getElementById('sensexPoints').textContent = (data.sensex.is_up ? '+' : '') + data.sensex.change.toFixed(2);
+                        document.getElementById('sensexPoints').className = 'ticker-points ' + (data.sensex.is_up ? 'up' : 'down');
+                        document.getElementById('sensexChange').textContent = (data.sensex.is_up ? '+' : '') + data.sensex.change_percent.toFixed(2) + '%';
+                        document.getElementById('sensexChange').className = 'ticker-change ' + (data.sensex.is_up ? 'up' : 'down');
+                        document.getElementById('sensexDot').className = 'pulse-dot ' + (data.sensex.is_up ? 'up' : 'down');
+                    }
+                    
+                    // Nifty
+                    document.getElementById('niftyValue').textContent = data.nifty.price.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+                    document.getElementById('niftyPoints').textContent = (data.nifty.is_up ? '+' : '') + data.nifty.change.toFixed(2);
+                    document.getElementById('niftyPoints').className = 'ticker-points ' + (data.nifty.is_up ? 'up' : 'down');
+                    document.getElementById('niftyChange').textContent = (data.nifty.is_up ? '+' : '') + data.nifty.change_percent.toFixed(2) + '%';
+                    document.getElementById('niftyChange').className = 'ticker-change ' + (data.nifty.is_up ? 'up' : 'down');
+                    document.getElementById('niftyDot').className = 'pulse-dot ' + (data.nifty.is_up ? 'up' : 'down');
+                    
+                    // Bank Nifty
+                    document.getElementById('bnValue').textContent = data.banknifty.price.toLocaleString('en-IN', { maximumFractionDigits: 2 });
+                    document.getElementById('bnPoints').textContent = (data.banknifty.is_up ? '+' : '') + data.banknifty.change.toFixed(2);
+                    document.getElementById('bnPoints').className = 'ticker-points ' + (data.banknifty.is_up ? 'up' : 'down');
+                    document.getElementById('bnChange').textContent = (data.banknifty.is_up ? '+' : '') + data.banknifty.change_percent.toFixed(2) + '%';
+                    document.getElementById('bnChange').className = 'ticker-change ' + (data.banknifty.is_up ? 'up' : 'down');
+                    document.getElementById('bnDot').className = 'pulse-dot ' + (data.banknifty.is_up ? 'up' : 'down');
+                }
+            } catch (err) {
+                console.log('Market data fetch error:', err.message);
+            }
+        }
+
+        fetchIndexData();
+        setInterval(fetchIndexData, 30000);
+
+        // Login
+        let needMFA = false;
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const errBox = document.getElementById('errorBox');
+
+            btn.textContent = 'Signing in...';
+            btn.disabled = true;
+            errBox.style.display = 'none';
+
+            try {
+                const body = {
+                    username: document.getElementById('username').value,
+                    password: document.getElementById('password').value
+                };
+                if (needMFA) body.mfa_code = document.getElementById('mfaCode').value;
+
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    btn.textContent = '✓ Success!';
+                    btn.style.background = 'var(--green)';
+                    setTimeout(() => window.location.href = '/app', 500);
+                } else if (data.detail === 'MFA code required') {
+                    needMFA = true;
+                    document.getElementById('mfaSection').style.display = 'block';
+                    document.getElementById('mfaCode').focus();
+                    btn.textContent = 'Verify & Sign In';
+                    btn.disabled = false;
+                } else {
+                    throw new Error(data.detail || 'Login failed');
+                }
+            } catch (err) {
+                errBox.textContent = err.message;
+                errBox.style.display = 'block';
+                btn.textContent = 'Sign In';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

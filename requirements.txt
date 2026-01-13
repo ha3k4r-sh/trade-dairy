@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+sqlalchemy
+python-jose[cryptography]
+pyotp
+qrcode[pil]
+python-multipart
+jinja2
+pydantic
+pydantic-settings
+httpx
