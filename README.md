@@ -2,6 +2,11 @@
 
 A Python-based personal trading journal with username/password authentication and Google Authenticator MFA.
 
+## Application Screenshot
+
+![Trade Diary Dashboard](screenshots/LoginPage_Light.png)
+![Trade Diary Dashboard](screenshots/LoginPage_Dark.png)
+
 ## Features
 
 - **Authentication**: Username/password with TOTP MFA (Google Authenticator)
