@@ -64,8 +64,8 @@ Create a `.env` file to customize:
 ```env
 DATABASE_URL=sqlite:///./trade_diary.db
 SECRET_KEY=your-secret-key-here
-DEFAULT_USERNAME=ha3k4r
-DEFAULT_PASSWORD=YourSecurePassword
+DEFAULT_USERNAME=admin
+DEFAULT_PASSWORD=admin
 ```
 
 Generate a secure secret key:
